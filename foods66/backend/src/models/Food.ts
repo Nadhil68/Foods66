@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
+import { createFirestoreModel } from './firestoreModel';
 
 export interface IFood {
   _id?: string;
+  id?: string;
   name: string;
   description: string;
   price: number;
@@ -23,6 +24,9 @@ export interface IFood {
   };
   dietaryTags?: string[];
   healthTags?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
+  save?: () => Promise<any>;
 }
 
 /**
@@ -34,34 +38,5 @@ export const generateFoodImagePath = (name: string): string => {
   return `/uploads/foods/${slug}.webp`;
 };
 
-const FoodSchema = new mongoose.Schema<IFood>({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  category: { type: String, required: true, index: true },
-  image: { type: String, required: true, default: '/uploads/foods/default.webp' },
-  available: { type: Boolean, default: true },
-  stock: { type: Number, default: 100 },
-  isVegetarian: { type: Boolean, default: false },
-  isRecommendedForHealth: { type: Boolean, default: false, index: true },
-  rating: { type: Number, default: 4.5 },
-  reviewsCount: { type: Number, default: 25 },
-  nutritionalInfo: {
-    calories: { type: Number, default: 350 },
-    protein: { type: Number, default: 12 },
-    carbs: { type: Number, default: 45 },
-    fat: { type: Number, default: 10 },
-    sugar: { type: Number, default: 5 },
-    sodium: { type: Number, default: 300 }
-  },
-  dietaryTags: [{ type: String }],
-  healthTags: [{ type: String }]
-}, { timestamps: true });
-
-// Compound index for category and price
-FoodSchema.index({ category: 1, price: 1 });
-
-// Text index for search engine
-FoodSchema.index({ name: 'text', description: 'text' });
-
-export const Food = mongoose.model<IFood>('Food', FoodSchema);
+export const Food = createFirestoreModel<IFood>('foods');
+export default Food;

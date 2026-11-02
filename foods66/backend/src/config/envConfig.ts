@@ -21,14 +21,8 @@ if (!JWT_SECRET) {
   JWT_SECRET = 'foods66_enterprise_jwt_secret_fallback_key_2026';
 }
 
-let MONGODB_URI = process.env.MONGODB_URI;
-if (!MONGODB_URI) {
-  console.warn(
-    '⚠️ WARNING: MONGODB_URI is not configured in environment variables. ' +
-    'Database connection will be deferred until configured.'
-  );
-  MONGODB_URI = process.env.VERCEL ? '' : 'mongodb://localhost:27017/foods66';
-}
+const MONGODB_URI = process.env.MONGODB_URI || '';
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'foods66-3e9a5';
 
 // ── Optional Variables (warn if missing) ─────────────────────
 
@@ -67,6 +61,7 @@ export const env = {
   STRIPE_SECRET_KEY,
   STRIPE_PUBLISHABLE_KEY,
   STRIPE_WEBHOOK_SECRET,
+  FIREBASE_PROJECT_ID,
   isProduction: NODE_ENV === 'production',
   isDevelopment: NODE_ENV === 'development',
 } as const;

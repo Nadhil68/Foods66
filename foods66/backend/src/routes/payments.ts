@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import mongoose from 'mongoose';
+import { ObjectIdMock } from '../models/firestoreModel';
 import Stripe from 'stripe';
 import { protect, AuthRequest } from '../middlewares/auth';
 import { Order, IOrderItem } from '../models/Order';
@@ -87,8 +87,8 @@ const createPaymentSessionHandler = async (req: AuthRequest, res: Response): Pro
         return;
       }
 
-      // Root Cause 2 & 3: Strict MongoDB ObjectId validation. No fake ITEM-* allowed.
-      if (!mongoose.Types.ObjectId.isValid(item.foodId)) {
+      // Root Cause 2 & 3: Strict Document ID validation. No fake ITEM-* allowed.
+      if (!ObjectIdMock.isValid(item.foodId)) {
         res.status(400).json({
           success: false,
           message: `Invalid food item ID: ${item.foodId}. Please update your cart with latest items from the menu.`,
@@ -261,8 +261,8 @@ const createPaymentSessionHandler = async (req: AuthRequest, res: Response): Pro
       : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : (req.headers.origin as string) || env.CLIENT_URL || 'http://localhost:3000');
     const stripe = getStripeClient();
 
-    // Pre-generate MongoDB Order ID so it is safely linked to Stripe metadata and success_url
-    const pregeneratedOrderId = new mongoose.Types.ObjectId();
+    // Pre-generate Order ID so it is safely linked to Stripe metadata and success_url
+    const pregeneratedOrderId = new ObjectIdMock().toString();
     let stripeSessionId = `mock_sess_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     let stripeSessionUrl: string | undefined = undefined;
 

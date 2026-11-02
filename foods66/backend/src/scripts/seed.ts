@@ -11,7 +11,7 @@ import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { connectDB } from '../config/database';
+import { initFirebase } from '../config/firebase';
 import { Food, generateFoodImagePath } from '../models/Food';
 import { User } from '../models/User';
 import { Coupon } from '../models/Coupon';
@@ -133,8 +133,8 @@ const FOODS: SeedFood[] = [
 
 const seed = async () => {
   try {
-    await connectDB();
-    console.log('🌱 Starting enterprise database seed...');
+    initFirebase();
+    console.log('🌱 Starting enterprise database seed to live Firebase Firestore...');
 
     // 1. Clear & Seed Foods
     await Food.deleteMany({});

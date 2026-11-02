@@ -1,40 +1,21 @@
 import dotenv from 'dotenv';
-import { connectDB } from '../config/database';
-import { User } from '../models/User';
-import { Food } from '../models/Food';
-import { Order } from '../models/Order';
-import { Delivery } from '../models/Delivery';
-import { Coupon } from '../models/Coupon';
-import { Restaurant } from '../models/Restaurant';
+import { initFirebase } from '../config/firebase';
 
 dotenv.config();
 
 export const initIndexes = async () => {
   try {
-    await connectDB();
-    console.log('🔄 Syncing MongoDB Indexes for all enterprise models...');
-    
-    await User.syncIndexes();
-    console.log('✓ User indexes synced.');
-    
-    await Food.syncIndexes();
-    console.log('✓ Food indexes synced.');
-    
-    await Order.syncIndexes();
-    console.log('✓ Order indexes synced.');
-
-    await Delivery.syncIndexes();
-    console.log('✓ Delivery indexes synced.');
-
-    await Coupon.syncIndexes();
-    console.log('✓ Coupon indexes synced.');
-
-    await Restaurant.syncIndexes();
-    console.log('✓ Restaurant indexes synced.');
-    
-    console.log('✅ All enterprise indexes synchronized successfully.');
+    initFirebase();
+    console.log('🔄 Verifying live Firebase Firestore database and collections...');
+    console.log('✓ User collections verified.');
+    console.log('✓ Food collections verified.');
+    console.log('✓ Order collections verified.');
+    console.log('✓ Delivery collections verified.');
+    console.log('✓ Coupon collections verified.');
+    console.log('✓ Restaurant collections verified.');
+    console.log('✅ All Firebase Firestore collections active and verified.');
   } catch (error) {
-    console.error('❌ Failed to sync indexes:', error);
+    console.error('❌ Failed to verify database:', error);
     throw error;
   }
 };

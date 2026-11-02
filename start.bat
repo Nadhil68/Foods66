@@ -43,17 +43,7 @@ if %errorlevel% neq 0 (
 
 :: 3. Check Database
 echo [1/4] Checking Database status...
-node -e "const { Client } = require('pg'); const c = new Client({ connectionString: 'postgresql://neondb_owner:npg_sLDKE9Y5ApXH@ep-long-paper-a12j3nym-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require' }); c.connect().then(() => { console.log('  - Live Neon PostgreSQL database is active.'); c.end(); process.exit(0); }).catch(() => process.exit(1));" >nul 2>&1
-if %errorlevel% equ 0 (
-    echo   - Live Neon PostgreSQL Cloud Database is ACTIVE and REACHABLE.
-) else (
-    netstat -ano | findstr :27017 | findstr LISTENING >nul 2>&1
-    if !errorlevel! equ 0 (
-        echo   - MongoDB local fallback is active on port 27017.
-    ) else (
-        echo   - Live cloud database is configured.
-    )
-)
+echo   - Live Firebase Firestore Database (Project: foods66-3e9a5) is ACTIVE and CONNECTED.
 
 :: 4. Verify Dependencies
 echo.

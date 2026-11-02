@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import mongoose from 'mongoose';
+import { ObjectIdMock } from '../models/firestoreModel';
 import { Order, OrderStatus, IOrderItem } from '../models/Order';
 import { Food } from '../models/Food';
 import { Coupon } from '../models/Coupon';
@@ -206,7 +206,7 @@ router.get('/:id', protect, async (req: AuthRequest, res: Response): Promise<voi
     let order = null;
     if (orderId.startsWith('cs_') || orderId.startsWith('mock_sess_')) {
       order = await Order.findOne({ sessionId: orderId });
-    } else if (mongoose.Types.ObjectId.isValid(orderId)) {
+    } else if (ObjectIdMock.isValid(orderId)) {
       order = await Order.findById(orderId);
     }
 
@@ -291,7 +291,7 @@ router.post('/', protect, async (req: AuthRequest, res: Response): Promise<void>
         return;
       }
 
-      if (!mongoose.Types.ObjectId.isValid(item.foodId)) {
+      if (!ObjectIdMock.isValid(item.foodId)) {
         res.status(400).json({
           success: false,
           message: `Invalid food item ID: ${item.foodId}.`,
@@ -507,7 +507,7 @@ const updateOrderStatusHandler = async (req: AuthRequest, res: Response): Promis
         message: `Invalid state transition: Cannot change order status from "${currentStatus}" to "${requestedStatus}"`,
         code: 'INVALID_STATUS_TRANSITION',
         currentStatus,
-        allowedNextStatuses: VALID_TRANSITIONS[currentStatus] || []
+        allowedNextStatuses: VALID_TRANSITIONS[currentStatus as OrderStatus] || []
       });
       return;
     }

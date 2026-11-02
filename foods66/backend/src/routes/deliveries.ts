@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import mongoose from 'mongoose';
+import { ObjectIdMock } from '../models/firestoreModel';
 import { Delivery, DeliveryStatus } from '../models/Delivery';
 import { Order } from '../models/Order';
 import { User } from '../models/User';
@@ -468,7 +468,7 @@ router.get('/tracking/:orderId', protect, async (req: AuthRequest, res: Response
     const user = req.user;
 
     let order = null;
-    if (mongoose.Types.ObjectId.isValid(orderId)) {
+    if (ObjectIdMock.isValid(orderId)) {
       order = await Order.findById(orderId);
     } else if (orderId.startsWith('cs_') || orderId.startsWith('mock_sess_')) {
       order = await Order.findOne({ sessionId: orderId });

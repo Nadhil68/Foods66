@@ -1,4 +1,6 @@
 .env
 .env.local
+serviceAccountKey.json
+*.serviceAccountKey.json
 node_modules/
 dist/

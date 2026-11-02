@@ -1,20 +1,14 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import { createFirestoreModel } from './firestoreModel';
 
-export interface IFavorite extends Document {
-  _id: mongoose.Types.ObjectId;
+export interface IFavorite {
+  _id: string;
+  id?: string;
   userId: string;
   foodId: string;
   createdAt: Date;
+  updatedAt?: Date;
+  save?: () => Promise<any>;
 }
 
-const FavoriteSchema = new Schema<IFavorite>({
-  userId: { type: String, required: true, index: true },
-  foodId: { type: String, required: true },
-}, {
-  timestamps: true
-});
-
-// Compound unique index: one user can favorite a food only once
-FavoriteSchema.index({ userId: 1, foodId: 1 }, { unique: true });
-
-export const Favorite = mongoose.model<IFavorite>('Favorite', FavoriteSchema);
+export const Favorite = createFirestoreModel<IFavorite>('favorites');
+export default Favorite;

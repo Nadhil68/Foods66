@@ -150,7 +150,7 @@ router.post('/:id/reviews', protect, validateBody(reviewSchema), async (req: Aut
     restaurant.reviews.push({ text, sentimentScore, date: new Date() });
 
     // Recalculate average restaurant rating based on AI sentiments (map -1 to 1 into 1 to 5 stars)
-    const avgSentiment = restaurant.reviews.reduce((acc, rev) => acc + rev.sentimentScore, 0) / restaurant.reviews.length;
+    const avgSentiment = restaurant.reviews.reduce((acc: number, rev: any) => acc + (rev.sentimentScore || 0), 0) / restaurant.reviews.length;
     const newRating = Math.max(1, Math.min(5, (avgSentiment + 1) * 2 + 1));
     restaurant.rating = parseFloat(newRating.toFixed(1));
 

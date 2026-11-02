@@ -1,20 +1,17 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import { createFirestoreModel } from './firestoreModel';
 
-export interface IFeedback extends Document {
+export interface IFeedback {
+  _id?: string;
+  id?: string;
   orderId: string;
   userId: string;
   rating: number; // 1-5 stars
   deliveryRating: number; // 1-5 stars
   comment: string;
   createdAt: Date;
+  updatedAt?: Date;
+  save?: () => Promise<any>;
 }
 
-const feedbackSchema = new Schema<IFeedback>({
-  orderId: { type: String, required: true, unique: true },
-  userId: { type: String, required: true },
-  rating: { type: Number, required: true, min: 1, max: 5 },
-  deliveryRating: { type: Number, required: true, min: 1, max: 5 },
-  comment: { type: String, default: '' },
-}, { timestamps: true });
-
-export const Feedback = mongoose.model<IFeedback>('Feedback', feedbackSchema);
+export const Feedback = createFirestoreModel<IFeedback>('feedback');
+export default Feedback;

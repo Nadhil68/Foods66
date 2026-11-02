@@ -3,10 +3,9 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
 import './services/queueService'; // BullMQ Worker
-import { connectDB } from './config/database';
-import { connectPostgres } from './config/postgres';
+import { initFirebase, getFirestore } from './config/firebase';
+import { ObjectIdMock } from './models/firestoreModel';
 import { env } from './config/envConfig';
 import { logger } from './utils/logger';
 
@@ -78,9 +77,8 @@ app.use('/api/payments/webhook', express.raw({ type: 'application/json' }), webh
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Connect to Databases
-connectPostgres();
-connectDB();
+// Connect to Live Firebase Firestore
+initFirebase();
 
 // API Routes
 app.use('/api/users', usersRouter);
@@ -109,30 +107,32 @@ app.get('/', (_req, res) => {
 
 // Health check
 app.get('/api/health', async (_req, res) => {
-  let neonStatus = 'disconnected';
-  let neonStats: any = null;
+  let firestoreStatus = 'disconnected';
+  let firestoreStats: any = null;
   try {
-    const { pgPool } = await import('./config/postgres');
-    const fCount = await pgPool.query('SELECT count(*) FROM foods');
-    const uCount = await pgPool.query('SELECT count(*) FROM users');
-    neonStatus = 'connected';
-    neonStats = {
-      foods: parseInt(fCount.rows[0].count, 10),
-      users: parseInt(uCount.rows[0].count, 10)
+    const db = getFirestore();
+    const fCountSnap = await db.collection('foods').count().get();
+    const uCountSnap = await db.collection('users').count().get();
+    const oCountSnap = await db.collection('orders').count().get();
+    firestoreStatus = 'connected';
+    firestoreStats = {
+      foods: fCountSnap.data().count,
+      users: uCountSnap.data().count,
+      orders: oCountSnap.data().count,
     };
   } catch (err: any) {
-    neonStatus = 'error: ' + (err.message || 'unknown');
+    firestoreStatus = 'error: ' + (err.message || 'unknown');
   }
 
   res.status(200).json({
     success: true,
     status: 'OK',
-    message: 'Foods66 Backend is running',
+    message: 'Foods66 Backend is running with Live Firebase Firestore',
     databases: {
-      neon: neonStatus,
-      neonStats,
-      mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+      firebaseFirestore: firestoreStatus,
+      firestoreStats,
     },
+    projectId: 'foods66-3e9a5',
     timestamp: new Date()
   });
 });
@@ -215,7 +215,7 @@ io.on('connection', (socket) => {
           const { Order } = await import('./models/Order');
           const { User } = await import('./models/User');
           let order = null;
-          if (mongoose.Types.ObjectId.isValid(orderId)) {
+          if (ObjectIdMock.isValid(orderId)) {
             order = await Order.findById(orderId);
           } else if (orderId.startsWith('cs_') || orderId.startsWith('mock_sess_')) {
             order = await Order.findOne({ sessionId: orderId });

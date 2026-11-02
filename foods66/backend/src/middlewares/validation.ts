@@ -7,7 +7,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { z, ZodSchema } from 'zod';
-import mongoose from 'mongoose';
+import { ObjectIdMock } from '../models/firestoreModel';
 
 // ── Validation Middleware ────────────────────────────────────
 
@@ -39,9 +39,9 @@ export const validateBody = (schema: ZodSchema) => {
 
 // ── Custom Zod Refinements ───────────────────────────────────
 
-/** Validates a string as a valid MongoDB ObjectId */
+/** Validates a string as a valid Document ID */
 const mongoId = z.string().refine(
-  (val) => mongoose.Types.ObjectId.isValid(val),
+  (val) => ObjectIdMock.isValid(val),
   { message: 'Invalid ID format' }
 );
 

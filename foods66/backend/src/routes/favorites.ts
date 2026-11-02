@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import mongoose from 'mongoose';
+import { ObjectIdMock } from '../models/firestoreModel';
 import { Favorite } from '../models/Favorite';
 import { Food } from '../models/Food';
 import { protect, AuthRequest } from '../middlewares/auth';
@@ -60,7 +60,7 @@ router.post('/', protect, async (req: AuthRequest, res: Response): Promise<void>
       return;
     }
 
-    if (!foodId || !mongoose.Types.ObjectId.isValid(foodId)) {
+    if (!foodId || !ObjectIdMock.isValid(foodId)) {
       res.status(400).json({ success: false, message: 'Valid food ID is required', code: 'INVALID_FOOD_ID' });
       return;
     }
