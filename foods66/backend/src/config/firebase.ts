@@ -27,19 +27,42 @@ export const initFirebase = () => {
   try {
     let credential;
 
-    const serviceAccountPath = path.join(__dirname, 'serviceAccountKey.json');
-    if (fs.existsSync(serviceAccountPath)) {
-      const fileData = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      credential = cert(fileData);
-    } else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    // Try multiple file locations for the service account key
+    const possiblePaths = [
+      path.join(__dirname, 'serviceAccountKey.json'),
+      path.join(__dirname, '..', 'serviceAccountKey.json'),
+      path.join(__dirname, '..', '..', 'serviceAccountKey.json'),
+      path.join(process.cwd(), 'serviceAccountKey.json'),
+      path.join(process.cwd(), 'backend', 'serviceAccountKey.json'),
+    ];
+
+    let fileLoaded = false;
+    for (const p of possiblePaths) {
+      if (fs.existsSync(p)) {
+        const fileData = JSON.parse(fs.readFileSync(p, 'utf8'));
+        credential = cert(fileData);
+        console.log(`🔑 Firebase credentials loaded from file: ${p}`);
+        fileLoaded = true;
+        break;
+      }
+    }
+
+    if (!fileLoaded && process.env.FIREBASE_SERVICE_ACCOUNT) {
       const parsed = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       credential = cert(parsed);
-    } else if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+      console.log('🔑 Firebase credentials loaded from FIREBASE_SERVICE_ACCOUNT env var');
+    } else if (!fileLoaded && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
       credential = cert({
         projectId: process.env.FIREBASE_PROJECT_ID || 'foods66-3e9a5',
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
       });
+      console.log('🔑 Firebase credentials loaded from individual env vars');
+    }
+
+    if (!credential) {
+      console.error('❌ No Firebase credentials found! Set FIREBASE_SERVICE_ACCOUNT env var on Vercel.');
+      throw new Error('Firebase credentials not configured. Set FIREBASE_SERVICE_ACCOUNT environment variable.');
     }
 
     appInstance = initializeApp({
