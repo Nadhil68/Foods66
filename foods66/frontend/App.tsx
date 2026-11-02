@@ -41,22 +41,24 @@ const FloatingCartBanner: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-lg bg-gradient-to-r from-orange-600 via-orange-500 to-red-600 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between border border-white/20 backdrop-blur-md animate-fadeIn">
-      <div className="flex items-center gap-3">
-        <div className="bg-white/20 px-3 py-1.5 rounded-xl text-sm font-bold flex items-center gap-1.5">
+    // On phones the banner sits above the bottom tab bar and leaves room on the right for the chat button.
+    <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-3 right-[5.25rem] md:bottom-6 md:left-0 md:right-0 md:mx-auto z-50 md:w-11/12 md:max-w-lg bg-gradient-to-r from-orange-600 via-orange-500 to-red-600 text-white px-3 py-2.5 md:px-5 md:py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-2 border border-white/20 backdrop-blur-md animate-fadeIn">
+      <div className="flex items-center gap-2 md:gap-3 min-w-0">
+        <div className="bg-white/20 px-2.5 py-1.5 md:px-3 rounded-xl text-xs md:text-sm font-bold flex items-center gap-1.5 whitespace-nowrap">
           <ShoppingCart size={16} />
           {totalItems} {totalItems === 1 ? 'item' : 'items'}
         </div>
-        <div className="flex flex-col">
-          <span className="text-[11px] text-orange-100 uppercase tracking-wider font-semibold">Total Amount</span>
-          <span className="font-extrabold text-base leading-tight">₹{totalPrice}</span>
+        <div className="flex flex-col min-w-0">
+          <span className="hidden md:block text-[11px] text-orange-100 uppercase tracking-wider font-semibold">Total Amount</span>
+          <span className="font-extrabold text-sm md:text-base leading-tight whitespace-nowrap">₹{totalPrice}</span>
         </div>
       </div>
       <button
         onClick={() => navigate('/cart')}
-        className="bg-white text-orange-600 px-5 py-2.5 rounded-xl font-bold text-sm shadow-md hover:bg-orange-50 active:scale-95 transition flex items-center gap-1.5"
+        aria-label={`Checkout, total ₹${totalPrice}`}
+        className="bg-white text-orange-600 px-3 py-2 md:px-5 md:py-2.5 rounded-xl font-bold text-xs md:text-sm shadow-md hover:bg-orange-50 active:scale-95 transition flex items-center gap-1.5 whitespace-nowrap shrink-0"
       >
-        Checkout — ₹{totalPrice} <ArrowRight size={16} />
+        <span>Checkout<span className="hidden md:inline"> — ₹{totalPrice}</span></span> <ArrowRight size={16} />
       </button>
     </div>
   );
@@ -95,9 +97,10 @@ const AppContent: React.FC = () => {
         Skip to main content
       </a>
       <Navbar />
-      <main id="main-content" tabIndex={-1} className="focus:outline-none">
+      {/* Signed-in phones get a fixed bottom tab bar (see Navbar) — keep page content clear of it. */}
+      <main id="main-content" tabIndex={-1} className={`focus:outline-none ${user ? 'pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0' : ''}`}>
         <ErrorBoundary>
-          <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="w-10 h-10 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin"></div></div>}>
+          <Suspense fallback={<div className="flex h-dvh items-center justify-center"><div className="w-10 h-10 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin"></div></div>}>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
@@ -133,7 +136,7 @@ const AppContent: React.FC = () => {
           </Suspense>
         </ErrorBoundary>
       </main>
-      <Toaster position="top-right" richColors />
+      <Toaster position="top-right" richColors offset={{ top: 72, right: 16 }} mobileOffset={{ top: 72, left: 12, right: 12 }} />
     </>
   );
 };

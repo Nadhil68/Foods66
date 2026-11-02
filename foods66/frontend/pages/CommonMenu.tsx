@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAppStore } from '../store/useStore';
 import { useAuthStore } from '../store/useStore';
 import { useCartStore } from '../store/useStore';
@@ -68,7 +68,7 @@ const CommonMenu: React.FC = () => {
   const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
-    // 1. Fetch Real MongoDB Foods
+    // 1. Fetch live foods from the API
     const fetchFoods = async () => {
       try {
         setLoadingFoods(true);
@@ -294,6 +294,31 @@ const CommonMenu: React.FC = () => {
     return items;
   }, [foods, activeCategory, activeDietaryTag, searchTerm, showFavoritesOnly, favorites, sortOrder]);
 
+  // Phones: the fixed-height virtual grid clips tall cards and traps scrolling, so render a normal
+  // page-flow list and reveal more cards as the user scrolls.
+  const [isPhone, setIsPhone] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
+  const [phoneVisibleCount, setPhoneVisibleCount] = useState(12);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const onChange = () => setIsPhone(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => { setPhoneVisibleCount(12); }, [processedItems]);
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!isPhone || !el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) setPhoneVisibleCount(c => c + 12);
+    }, { rootMargin: '600px' });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isPhone, phoneVisibleCount, processedItems.length]);
+
   // Calculate Virtualization Info
   const getColumnCount = (width: number) => {
     if (width >= 1280) return 4;
@@ -304,10 +329,10 @@ const CommonMenu: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-fixed bg-center transition-colors duration-500"
+      className="min-h-dvh bg-cover md:bg-fixed bg-center transition-colors duration-500"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=2070')" }}
     >
-      <div className="min-h-screen bg-white/80 dark:bg-gray-950/85 backdrop-blur-xl transition-colors duration-500">
+      <div className="min-h-dvh bg-white/80 dark:bg-gray-950/85 backdrop-blur-xl transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 py-8 pb-20">
       
       {/* Hero Banner */}
@@ -351,26 +376,26 @@ const CommonMenu: React.FC = () => {
 
       {/* Tab Switcher (Navigation) */}
       <div className="flex justify-center mb-8">
-        <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-full inline-flex shadow-inner">
+        <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-full flex w-full sm:w-auto sm:inline-flex shadow-inner">
           <button 
-            className="px-6 py-3 rounded-full flex items-center font-semibold transition-all duration-300 bg-white dark:bg-gray-700 shadow text-orange-600 dark:text-orange-400 ring-1 ring-orange-100 dark:ring-gray-600"
+            className="flex-1 sm:flex-none justify-center px-3 sm:px-6 py-3 text-sm sm:text-base rounded-full flex items-center font-semibold transition-all duration-300 bg-white dark:bg-gray-700 shadow text-orange-600 dark:text-orange-400 ring-1 ring-orange-100 dark:ring-gray-600"
           >
             <Utensils size={18} className="mr-2" /> Common Menu 
-            <span className="ml-2 text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full text-gray-600 dark:text-gray-300">1000+</span>
+            <span className="hidden sm:inline ml-2 text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full text-gray-600 dark:text-gray-300">1000+</span>
           </button>
           <button 
              onClick={() => navigate('/recommended-foods')}
-             className="px-6 py-3 rounded-full flex items-center font-semibold transition-all duration-300 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
+             className="flex-1 sm:flex-none justify-center px-3 sm:px-6 py-3 text-sm sm:text-base rounded-full flex items-center font-semibold transition-all duration-300 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             <Heart size={18} className="mr-2" /> 
-            {user?.healthProfile.hasIssues ? 'My Recommendations' : 'Healthy Options'}
-            <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full text-gray-600 dark:text-gray-300">600+</span>
+            <span className="sm:hidden">{user?.healthProfile.hasIssues ? 'For You' : 'Healthy'}</span><span className="hidden sm:inline">{user?.healthProfile.hasIssues ? 'My Recommendations' : 'Healthy Options'}</span>
+            <span className="hidden sm:inline ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full text-gray-600 dark:text-gray-300">600+</span>
           </button>
         </div>
       </div>
 
       {/* STICKY FILTER BAR */}
-      <div className="sticky top-16 z-40 bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-800 -mx-4 px-4 py-4 mb-6 transition-all">
+      <div className="md:sticky md:top-16 z-40 bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-800 -mx-4 px-4 py-4 mb-6 transition-all">
         <div className="max-w-7xl mx-auto space-y-4">
             
             {/* Top Row: Search and Dropdowns */}
@@ -551,6 +576,23 @@ const CommonMenu: React.FC = () => {
                 Clear All Filters
               </button>
           </div>
+      ) : isPhone ? (
+          <div className="space-y-6">
+            {processedItems.slice(0, phoneVisibleCount).map((item: any) => (
+              <FoodCard
+                key={item.id}
+                item={item}
+                onAdd={(qty: number) => handleAddToCart(item, qty)}
+                onUpdateQuantity={handleUpdateQuantity}
+                recommended={false}
+              />
+            ))}
+            {phoneVisibleCount < processedItems.length && (
+              <div ref={loadMoreRef} className="flex justify-center py-6 text-orange-500" aria-label="Loading more dishes">
+                <Loader2 size={24} className="animate-spin" />
+              </div>
+            )}
+          </div>
       ) : (
           <div style={{ height: 'calc(100vh - 200px)', minHeight: '680px', width: '100%' }}>
             <AutoSizer renderProp={({ height, width }) => {
@@ -575,7 +617,7 @@ const CommonMenu: React.FC = () => {
       {/* Customization Modal */}
       {customizationItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md animate-scaleIn">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90dvh] overflow-y-auto animate-scaleIn">
             <div className="flex justify-between items-center mb-4">
                <h3 className="text-xl font-bold flex items-center"><Coffee className="mr-2 text-brown-600" /> Customize {customizationItem.name}</h3>
                <button onClick={() => setCustomizationItem(null)}><X size={24} className="text-gray-400 hover:text-gray-600"/></button>
@@ -620,7 +662,7 @@ const CommonMenu: React.FC = () => {
       {/* Health Warning Modal */}
       {warningModal.show && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 px-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm border-l-4 border-amber-500">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm max-h-[90dvh] overflow-y-auto border-l-4 border-amber-500">
              <div className="flex items-start mb-4">
                 <AlertTriangle size={32} className="text-amber-500 mr-3 flex-shrink-0" />
                 <div>

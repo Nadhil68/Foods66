@@ -60,7 +60,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-dvh flex">
       {/* ── Left: Hero Panel (desktop) ─────────────────── */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Rotating background image */}

@@ -50,6 +50,21 @@
 
   /* Selection */
   ::selection { @apply bg-orange-200 dark:bg-orange-800/50 text-gray-900 dark:text-white; }
+
+  /* Never let content create a sideways scroll on phones */
+  html, body { overflow-x: clip; }
+
+  /* Keep long unbroken strings (emails, ids, addresses) inside their cards */
+  h1, h2, h3, h4, p { overflow-wrap: break-word; }
+}
+
+/* iOS Safari zooms the page when a focused field is under 16px — force 16px on phones */
+@media (max-width: 639px) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='color']),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* ─── Component Layer ────────────────────────────────────────── */

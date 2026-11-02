@@ -195,7 +195,7 @@ const DeliveryDashboard: React.FC = () => {
   }, [deliveries]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-24">
+    <div className="min-h-dvh bg-gray-50 dark:bg-gray-950 pb-24">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header Bar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">

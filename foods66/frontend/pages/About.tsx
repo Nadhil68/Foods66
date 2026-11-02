@@ -12,10 +12,10 @@ const About: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-fixed bg-center"
+      className="min-h-dvh bg-cover md:bg-fixed bg-center"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=2070')" }}
     >
-      <div className="min-h-screen bg-white/90 backdrop-blur-md py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-dvh bg-white/90 backdrop-blur-md py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Hero Section */}
         <div className="relative bg-gradient-to-r from-orange-600 to-red-600 py-20 px-8 text-center text-white overflow-hidden">

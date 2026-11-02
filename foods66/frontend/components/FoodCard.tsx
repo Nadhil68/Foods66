@@ -246,7 +246,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAdd, onUpdateQuantity, reco
         {/* Ask AI button */}
         <button
           onClick={handleAskAI}
-          className="absolute top-2.5 right-2.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur p-1.5 rounded-full shadow-md text-orange-600 hover:bg-orange-600 hover:text-white transition-all transform hover:scale-110 z-10 border border-orange-100 dark:border-orange-900"
+          className="absolute top-2.5 right-2.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur p-2.5 sm:p-1.5 rounded-full shadow-md text-orange-600 hover:bg-orange-600 hover:text-white transition-all transform hover:scale-110 z-10 border border-orange-100 dark:border-orange-900"
           title="Ask Chef AI about this dish"
         >
           <Bot size={15} />
@@ -272,7 +272,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAdd, onUpdateQuantity, reco
               {item.name}
             </h3>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
-              <button onClick={toggleFavorite} className="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+              <button onClick={toggleFavorite} aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'} aria-pressed={isFavorite} className="p-2.5 -m-2 sm:p-0.5 sm:m-0 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
                 <Heart size={14} className={`transition-colors ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-300 hover:text-red-400'}`} />
               </button>
               {item.rating && (
@@ -356,7 +356,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAdd, onUpdateQuantity, reco
             disabled={isGeneratingImg}
             aria-label={`Visualize ${item.name} with AI`}
             title="See AI-generated image of this dish"
-            className="flex-1 inline-flex items-center justify-center py-1.5 px-2.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800 disabled:opacity-50 transition"
+            className="flex-1 inline-flex items-center justify-center py-2.5 sm:py-1.5 px-2.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800 disabled:opacity-50 transition"
           >
             <Sparkles size={12} className="mr-1" />
             {isGeneratingImg ? 'Generating…' : 'Visualize'}
@@ -366,7 +366,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAdd, onUpdateQuantity, reco
             aria-label={`${isExpanded ? 'Hide' : 'View'} nutrition facts for ${item.name}`}
             aria-expanded={isExpanded}
             title="View full nutrition breakdown"
-            className="flex-1 inline-flex items-center justify-center py-1.5 px-2.5 rounded-xl text-xs font-semibold bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/40 border border-orange-100 dark:border-orange-800 transition"
+            className="flex-1 inline-flex items-center justify-center py-2.5 sm:py-1.5 px-2.5 rounded-xl text-xs font-semibold bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/40 border border-orange-100 dark:border-orange-800 transition"
           >
             <Info size={12} className="mr-1" />
             {isExpanded ? 'Hide' : 'Nutrition'}
@@ -382,7 +382,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAdd, onUpdateQuantity, reco
                 onClick={handleDecrease}
                 aria-label={`Decrease ${item.name} quantity in cart`}
                 title={inCartCount === 1 ? `Remove ${item.name} from cart` : `Decrease ${item.name} quantity`}
-                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 hover:bg-orange-600 hover:text-white dark:hover:bg-orange-500 dark:hover:text-white shadow-xs transition-all duration-200 active:scale-90 border border-orange-100 dark:border-orange-900/60"
+                className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 hover:bg-orange-600 hover:text-white dark:hover:bg-orange-500 dark:hover:text-white shadow-xs transition-all duration-200 active:scale-90 border border-orange-100 dark:border-orange-900/60"
               >
                 {inCartCount === 1 ? (
                   <Trash2 size={14} className="text-red-500 hover:text-white transition-colors" />
@@ -406,7 +406,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAdd, onUpdateQuantity, reco
                 onClick={handleIncrease}
                 aria-label={`Increase ${item.name} quantity in cart`}
                 title={`Add another ${item.name}`}
-                className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-600 hover:bg-orange-700 text-white shadow-xs transition-all duration-200 active:scale-90"
+                className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-orange-600 hover:bg-orange-700 text-white shadow-xs transition-all duration-200 active:scale-90"
               >
                 <Plus size={14} strokeWidth={2.5} />
               </button>

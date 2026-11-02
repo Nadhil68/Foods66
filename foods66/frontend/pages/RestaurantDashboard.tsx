@@ -111,7 +111,7 @@ const RestaurantDashboard: React.FC = () => {
 
   if (user?.role !== 'restaurant' && user?.role !== 'admin') {
     return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4">
+      <div className="flex flex-col items-center justify-center h-dvh gap-4">
         <div className="p-4 bg-red-100 dark:bg-red-900/30 rounded-2xl">
           <AlertTriangle size={40} className="text-red-500" />
         </div>
@@ -125,7 +125,7 @@ const RestaurantDashboard: React.FC = () => {
   const readyCount = orders.filter(o => o.status === 'READY_FOR_PICKUP').length;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+    <div className="min-h-dvh bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
       <div className="page-container">
 
         {/* ── Header ─── */}
@@ -165,11 +165,11 @@ const RestaurantDashboard: React.FC = () => {
             { label: 'Ready for Pickup', value: readyCount.toString(), icon: <Package size={18} />, color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600', change: 'Packed' },
             { label: 'Low Stock Alerts', value: INVENTORY.filter(i => i.status === 'low').length.toString(), icon: <AlertTriangle size={18} />, color: 'bg-red-100 dark:bg-red-900/30 text-red-600', change: 'Alert' },
           ].map((kpi, i) => (
-            <div key={i} className="card p-4 flex items-center gap-3">
-              <div className={`kpi-icon ${kpi.color}`}>{kpi.icon}</div>
+            <div key={i} className="card p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+              <div className={`kpi-icon p-2 sm:p-3 ${kpi.color}`}>{kpi.icon}</div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{kpi.label}</p>
-                <p className="text-xl font-extrabold text-gray-900 dark:text-white">{kpi.value}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight sm:truncate">{kpi.label}</p>
+                <p className="text-lg sm:text-xl font-extrabold text-gray-900 dark:text-white whitespace-nowrap">{kpi.value}</p>
                 <p className="text-[11px] text-orange-500 font-semibold">{kpi.change}</p>
               </div>
               {i === 0 && (
@@ -182,7 +182,7 @@ const RestaurantDashboard: React.FC = () => {
         </div>
 
         {/* ── Tabs ─── */}
-        <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-2xl mb-6 w-fit overflow-x-auto">
+        <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-2xl mb-6 w-fit max-w-full overflow-x-auto scrollbar-hide">
           {(['kitchen', 'analytics', 'inventory', 'menu'] as const).map(t => (
             <button
               key={t}

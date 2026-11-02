@@ -311,10 +311,10 @@ const Cart: React.FC = () => {
   if (cart.length === 0) {
     return (
       <div
-        className="min-h-screen bg-cover bg-fixed bg-center"
+        className="min-h-dvh bg-cover md:bg-fixed bg-center"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=2074')" }}
       >
-        <div className="min-h-screen flex flex-col items-center justify-center bg-white/90 dark:bg-gray-950/90 backdrop-blur-md px-4">
+        <div className="min-h-dvh flex flex-col items-center justify-center bg-white/90 dark:bg-gray-950/90 backdrop-blur-md px-4">
           <ShoppingBag size={64} className="text-gray-400 mb-4" />
           <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-2">Your Cart is Empty</h2>
           <p className="text-gray-500 dark:text-gray-400 mb-6">Looks like you haven't made your choice yet.</p>
@@ -328,10 +328,10 @@ const Cart: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-fixed bg-center"
+      className="min-h-dvh bg-cover md:bg-fixed bg-center"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=2074')" }}
     >
-      <div className="min-h-screen bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
+      <div className="min-h-dvh bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
         <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-8">Checkout</h1>
 
@@ -379,7 +379,7 @@ const Cart: React.FC = () => {
                     }}
                   />
                   <div className="flex-grow min-w-0">
-                    <h3 className="font-extrabold text-lg text-gray-900 dark:text-white mb-1 truncate">{item.name}</h3>
+                    <h3 className="font-extrabold text-base sm:text-lg text-gray-900 dark:text-white mb-1 line-clamp-2 break-words">{item.name}</h3>
                     <div className="flex flex-wrap items-center gap-3 text-sm">
                       <span className="text-gray-500 dark:text-gray-400">Quantity: {item.quantity}</span>
                       <QuantitySelector
@@ -756,7 +756,7 @@ const Cart: React.FC = () => {
           {/* Modal Overlays for processing states */}
           {checkoutStatus !== 'idle' && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
-              <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl transform scale-100 transition-transform">
+              <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full max-h-[90dvh] overflow-y-auto shadow-2xl transform scale-100 transition-transform">
                 {checkoutStatus === 'processing' && (
                   <div className="flex flex-col items-center py-8">
                     <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin mb-6"></div>
@@ -807,7 +807,7 @@ const Cart: React.FC = () => {
           {/* Health Warning Dialog */}
           {showHealthWarning && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 backdrop-blur-sm animate-fadeIn">
-              <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md border border-red-100 transform transition-all scale-100">
+              <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90dvh] overflow-y-auto border border-red-100 transform transition-all scale-100">
                 <div className="flex flex-col items-center text-center mb-6">
                   <div className="bg-red-100 p-3 rounded-full mb-4">
                     <AlertCircle size={32} className="text-red-600" />
@@ -852,7 +852,7 @@ const Cart: React.FC = () => {
 
           {/* Undo Snackbar */}
           {undoState.show && (
-            <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl z-50 flex items-center gap-4 animate-fadeIn">
+            <div className="fixed bottom-40 lg:bottom-10 left-0 right-0 mx-auto w-max max-w-[calc(100vw-2rem)] bg-gray-900 text-white px-4 sm:px-6 py-3 rounded-full shadow-2xl z-50 flex items-center gap-3 sm:gap-4 animate-fadeIn">
               <span className="text-sm font-medium">Item removed from cart</span>
               <button
                 type="button"
@@ -875,7 +875,7 @@ const Cart: React.FC = () => {
         </div>
 
         {/* Sticky Mobile CTA Bar */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-4 py-3 shadow-[0_-4px_24px_rgba(0,0,0,0.1)] safe-area-bottom">
+        <div className="lg:hidden fixed bottom-[calc(3.6rem+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-4 py-3 shadow-[0_-4px_24px_rgba(0,0,0,0.1)] pb-safe md:pb-3">
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-col">
               <span className="text-xs text-gray-500 dark:text-gray-400">Total</span>

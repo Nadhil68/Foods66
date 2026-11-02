@@ -40,7 +40,7 @@ export const CommonFoodsAlerts: React.FC<CommonFoodsAlertsProps> = ({ item, prof
                 e.stopPropagation();
                 setShowDetails(!showDetails);
               }}
-              className="text-red-400 hover:text-red-600 dark:hover:text-red-300 p-0.5 rounded transition flex-shrink-0"
+              className="text-red-400 hover:text-red-600 dark:hover:text-red-300 p-2.5 -m-2 sm:p-0.5 sm:m-0 rounded transition flex-shrink-0"
               aria-label={showDetails ? "Hide nutrient details" : "Show nutrient details"}
               title="Nutrient details"
             >

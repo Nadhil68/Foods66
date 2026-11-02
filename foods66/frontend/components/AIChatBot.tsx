@@ -104,11 +104,11 @@ const AIChatBot: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="fixed bottom-24 right-4 z-50 flex flex-col items-end pointer-events-none">
-      
+    <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] md:bottom-24 right-4 z-50 flex flex-col items-end pointer-events-none max-w-[calc(100vw-2rem)]">
+
       {/* Chat Window */}
-      <div 
-        className={`pointer-events-auto bg-white w-80 sm:w-96 rounded-2xl shadow-2xl border border-orange-100 overflow-hidden transition-all duration-300 transform origin-bottom-right mb-4 ${isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none h-0'}`}
+      <div
+        className={`pointer-events-auto bg-white w-[calc(100vw-2rem)] max-w-sm sm:w-96 rounded-2xl shadow-2xl border border-orange-100 overflow-hidden transition-all duration-300 transform origin-bottom-right mb-4 ${isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none h-0'}`}
       >
         {/* Header */}
         <div className={`p-4 flex justify-between items-center ${isOfflineMode ? 'bg-gray-800' : 'bg-gradient-to-r from-orange-600 to-red-600'}`}>
@@ -125,7 +125,7 @@ const AIChatBot: React.FC = () => {
            </div>
            <button 
              onClick={() => setIsOpen(false)} 
-             className="text-white/80 hover:text-white transition"
+             className="text-white/80 hover:text-white transition p-2 -m-2"
              aria-label="Close Chef AI Assistant"
            >
               <X size={20} />
@@ -133,7 +133,7 @@ const AIChatBot: React.FC = () => {
         </div>
 
         {/* Messages */}
-        <div className="h-80 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-3">
+        <div className="h-[clamp(10rem,calc(100dvh_-_25rem),20rem)] sm:h-80 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-3">
            {messages.map(msg => (
              <div key={msg.id} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.role === 'model' && (
@@ -178,7 +178,7 @@ const AIChatBot: React.FC = () => {
                       <button 
                         key={i} 
                         onClick={() => handleSendMessage(s)}
-                        className="whitespace-nowrap text-xs bg-orange-50 text-orange-700 px-3 py-1 rounded-full border border-orange-100 hover:bg-orange-100 transition"
+                        className="whitespace-nowrap text-xs bg-orange-50 text-orange-700 px-3 py-2 sm:py-1 rounded-full border border-orange-100 hover:bg-orange-100 transition"
                       >
                         {s}
                       </button>
@@ -205,7 +205,7 @@ const AIChatBot: React.FC = () => {
                 onClick={() => handleSendMessage()}
                 disabled={!inputValue.trim() || isLoading}
                 aria-label="Send message to Chef AI"
-                className="p-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
+                className="p-3 sm:p-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
               >
                 <Send size={16} />
               </button>

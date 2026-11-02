@@ -116,7 +116,7 @@ const OrderHistory: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4">
+      <div className="min-h-dvh bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4">
         <div className="w-12 h-12 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin mb-4"></div>
         <p className="text-gray-500 font-medium">Loading your orders...</p>
       </div>
@@ -126,10 +126,10 @@ const OrderHistory: React.FC = () => {
   if (orders.length === 0) {
     return (
       <div 
-        className="min-h-screen bg-cover bg-fixed bg-center"
+        className="min-h-dvh bg-cover md:bg-fixed bg-center"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=2070')" }}
       >
-        <div className="min-h-screen flex flex-col items-center justify-center bg-white/90 dark:bg-gray-950/90 backdrop-blur-md px-4">
+        <div className="min-h-dvh flex flex-col items-center justify-center bg-white/90 dark:bg-gray-950/90 backdrop-blur-md px-4">
           <Package size={64} className="text-gray-400 mb-4" />
           <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-2">No Orders Yet</h2>
           <p className="text-gray-500 dark:text-gray-400 mb-6">You haven't placed any orders yet.</p>
@@ -143,10 +143,10 @@ const OrderHistory: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-fixed bg-center"
+      className="min-h-dvh bg-cover md:bg-fixed bg-center"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=2070')" }}
     >
-      <div className="min-h-screen bg-white/85 dark:bg-gray-950/85 backdrop-blur-md">
+      <div className="min-h-dvh bg-white/85 dark:bg-gray-950/85 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 py-8 pb-24">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
             <div>

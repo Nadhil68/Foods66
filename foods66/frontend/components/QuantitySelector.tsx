@@ -23,9 +23,9 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   className = "",
   size = 'md'
 }) => {
-  const btnSize = size === 'sm' ? 'w-7 h-7' : 'w-8 h-8';
+  const btnSize = size === 'sm' ? 'w-9 h-9 sm:w-7 sm:h-7' : 'w-10 h-10 sm:w-8 sm:h-8';
   const iconSize = size === 'sm' ? 13 : 15;
-  const textSize = size === 'sm' ? 'text-xs w-7' : 'text-sm w-8';
+  const textSize = size === 'sm' ? 'text-xs w-8 sm:w-7' : 'text-sm w-9 sm:w-8';
 
   return (
     <div className={`flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5 shadow-inner border border-gray-200 dark:border-gray-700 ${className}`}>

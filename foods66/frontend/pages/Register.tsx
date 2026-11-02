@@ -657,7 +657,7 @@ const Register: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative bg-cover bg-center"
+      className="min-h-dvh flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative bg-cover bg-center"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&q=80')" }}
     >
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>

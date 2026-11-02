@@ -114,7 +114,7 @@ const RecommendedMenu: React.FC = () => {
     }
   };
 
-  // Determine Source Data - strictly real MongoDB items
+  // Determine Source Data - strictly real database items
   const sourceData = (hasHealthIssues && recommendations.length > 0) ? recommendations : dbHealthyFoods;
 
   // Processing Logic
@@ -135,10 +135,10 @@ const RecommendedMenu: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-fixed bg-center"
+      className="min-h-dvh bg-cover md:bg-fixed bg-center"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=2053')" }}
     >
-      <div className="min-h-screen bg-white/80 backdrop-blur-md">
+      <div className="min-h-dvh bg-white/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 py-8 pb-20">
       
       {/* Header */}
@@ -155,19 +155,19 @@ const RecommendedMenu: React.FC = () => {
 
       {/* Tab Switcher */}
       <div className="flex justify-center mb-8">
-        <div className="bg-gray-100 p-1 rounded-full inline-flex shadow-inner">
+        <div className="bg-gray-100 p-1 rounded-full flex w-full sm:w-auto sm:inline-flex shadow-inner">
           <button 
             onClick={() => navigate('/common-foods')}
-            className="px-6 py-3 rounded-full flex items-center font-semibold transition-all duration-300 text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+            className="flex-1 sm:flex-none justify-center px-3 sm:px-6 py-3 text-sm sm:text-base rounded-full flex items-center font-semibold transition-all duration-300 text-gray-500 hover:text-gray-700 hover:bg-gray-200"
           >
             <Utensils size={18} className="mr-2" /> Common Menu 
-            <span className="ml-2 text-xs bg-gray-200 px-2 py-0.5 rounded-full text-gray-600">1000+</span>
+            <span className="hidden sm:inline ml-2 text-xs bg-gray-200 px-2 py-0.5 rounded-full text-gray-600">1000+</span>
           </button>
           <button 
-             className="px-6 py-3 rounded-full flex items-center font-semibold transition-all duration-300 bg-orange-600 shadow text-white"
+             className="flex-1 sm:flex-none justify-center px-3 sm:px-6 py-3 text-sm sm:text-base rounded-full flex items-center font-semibold transition-all duration-300 bg-orange-600 shadow text-white"
           >
             <Heart size={18} className="mr-2" /> 
-            {hasHealthIssues ? 'My Recommendations' : 'Healthy Options'}
+            <span className="sm:hidden">{hasHealthIssues ? 'For You' : 'Healthy'}</span><span className="hidden sm:inline">{hasHealthIssues ? 'My Recommendations' : 'Healthy Options'}</span>
             <span className="ml-2 text-xs bg-orange-500 px-2 py-0.5 rounded-full text-white">
                {hasHealthIssues ? (recommendations.length || 'AI') : `${dbHealthyFoods.length || '600'}+`}
             </span>
@@ -231,7 +231,7 @@ const RecommendedMenu: React.FC = () => {
         /* Data Grid */
         <>
             {/* Filter Bar */}
-            <div className="sticky top-16 z-40 bg-gray-50/95 backdrop-blur-md shadow-sm border-b border-gray-200 -mx-4 px-4 py-4 mb-6 transition-all">
+            <div className="md:sticky md:top-16 z-40 bg-gray-50/95 backdrop-blur-md shadow-sm border-b border-gray-200 -mx-4 px-4 py-4 mb-6 transition-all">
                 <div className="max-w-7xl mx-auto flex flex-col gap-4">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4 animate-fadeIn">
                         <div className="relative w-full md:w-64 flex-shrink-0">
@@ -392,7 +392,7 @@ const RecommendedMenu: React.FC = () => {
       {/* Customization Modal */}
       {customizationItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md animate-scaleIn">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90dvh] overflow-y-auto animate-scaleIn">
             <div className="flex justify-between items-center mb-4">
                <h3 className="text-xl font-bold flex items-center"><Coffee className="mr-2 text-brown-600" /> Customize {customizationItem.name}</h3>
                <button onClick={() => setCustomizationItem(null)}><X size={24} className="text-gray-400 hover:text-gray-600"/></button>

@@ -261,10 +261,10 @@ const Profile: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-fixed bg-center"
+      className="min-h-dvh bg-cover md:bg-fixed bg-center"
       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1543362906-acfc16c67564?auto=format&fit=crop&q=80&w=2000')" }}
     >
-      <div className="min-h-screen bg-white/80 backdrop-blur-md">
+      <div className="min-h-dvh bg-white/80 backdrop-blur-md">
         <div className="max-w-4xl mx-auto px-4 py-10 pb-20">
       
       {/* Profile Header */}

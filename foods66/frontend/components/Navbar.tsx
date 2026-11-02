@@ -47,7 +47,7 @@ const ThemeToggle: React.FC<{ theme: Theme; setTheme: (t: Theme) => void }> = ({
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className="p-2.5 sm:p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         title="Change theme"
         aria-label="Change theme"
       >
@@ -133,7 +133,7 @@ const Navbar: React.FC = () => {
   const navLink = (to: string, icon: React.ReactNode, label: string) => (
     <Link
       to={to}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-200
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-200
         ${isActive(to)
           ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
           : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'}`}
@@ -168,6 +168,29 @@ const Navbar: React.FC = () => {
     );
   };
 
+  /* Mobile bottom tab bar — tabs follow the signed-in role */
+  const profileTab = { to: '/profile', icon: <UserIcon size={22} />, label: 'Profile', badge: undefined as number | undefined };
+  const bottomTabs: { to: string; icon: React.ReactNode; label: string; badge?: number }[] =
+    user?.role === 'driver' ? [
+      { to: '/delivery-dashboard', icon: <MapPin size={22} />, label: 'Deliveries' },
+      profileTab,
+    ] : user?.role === 'restaurant' ? [
+      { to: '/restaurant-dashboard', icon: <ChefHat size={22} />, label: 'Kitchen' },
+      { to: '/common-foods', icon: <Utensils size={22} />, label: 'Menu' },
+      profileTab,
+    ] : user?.role === 'admin' ? [
+      { to: '/admin-dashboard', icon: <BarChart size={22} />, label: 'Dashboard' },
+      { to: '/common-foods', icon: <Utensils size={22} />, label: 'Menu' },
+      { to: '/cart', icon: <ShoppingCart size={22} />, label: 'Cart', badge: totalItems },
+      profileTab,
+    ] : [
+      { to: '/common-foods', icon: <Home size={22} />, label: 'Home' },
+      { to: '/recommended-foods', icon: <Sparkles size={22} />, label: 'For You' },
+      { to: '/cart', icon: <ShoppingCart size={22} />, label: 'Cart', badge: totalItems },
+      { to: '/orders', icon: <Package size={22} />, label: 'Orders' },
+      profileTab,
+    ];
+
   return (
     <>
       {/* ── Top Navbar ─────────────────────────────────── */}
@@ -184,7 +207,7 @@ const Navbar: React.FC = () => {
               <div className="bg-gradient-to-br from-orange-500 to-red-500 p-2 rounded-xl shadow-md shadow-orange-500/30 group-hover:shadow-orange-500/50 transition-shadow">
                 <ChefHat size={20} className="text-white" />
               </div>
-              <div className="hidden sm:block">
+              <div className="hidden sm:block md:hidden lg:block">
                 <span className="font-extrabold text-lg tracking-wide text-gray-900 dark:text-white">FOODS66</span>
                 <span className="hidden lg:block text-[10px] text-gray-400 font-medium -mt-0.5">Enterprise Platform</span>
               </div>
@@ -231,7 +254,7 @@ const Navbar: React.FC = () => {
                   <div className="relative" ref={notifRef}>
                     <button
                       onClick={() => setNotifOpen(!notifOpen)}
-                      className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
+                      className="p-2.5 sm:p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
                       aria-label="Notifications"
                     >
                       <Bell size={18} className="text-gray-600 dark:text-gray-300" />
@@ -243,7 +266,7 @@ const Navbar: React.FC = () => {
                           initial={{ opacity: 0, y: -6, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -6, scale: 0.95 }}
-                          className="absolute right-0 top-12 card p-4 w-72 z-50"
+                          className="fixed left-4 right-4 top-[4.5rem] sm:absolute sm:left-auto sm:right-0 sm:top-12 card p-4 sm:w-72 z-50"
                         >
                           <p className="text-sm font-bold text-gray-900 dark:text-white mb-3">Notifications</p>
                           <div className="space-y-2">
@@ -329,15 +352,16 @@ const Navbar: React.FC = () => {
                   {/* Mobile hamburger */}
                   <button
                     onClick={() => setMobileOpen(!mobileOpen)}
-                    className="md:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    className="md:hidden p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     aria-label="Toggle menu"
+                    aria-expanded={mobileOpen}
                   >
                     {mobileOpen ? <X size={20} /> : <MenuIcon size={20} />}
                   </button>
                 </>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Link to="/signin" className="btn-ghost py-2 px-4 text-sm hidden sm:inline-flex">Sign in</Link>
+                  <Link to="/signin" className="btn-ghost py-2 px-3 sm:px-4 text-sm">Sign in</Link>
                   <Link to="/signup" className="btn-primary py-2 px-4 text-sm">Register</Link>
                 </div>
               )}
@@ -354,19 +378,25 @@ const Navbar: React.FC = () => {
               exit={{ opacity: 0, height: 0 }}
               className="md:hidden border-t border-gray-200 dark:border-gray-800 overflow-hidden"
             >
-              <div className="px-4 py-4 space-y-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur">
-                <Link to="/common-foods" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/common-foods') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
-                  <Utensils size={18} /> Menu
-                </Link>
-                <Link to="/recommended-foods" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/recommended-foods') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
-                  <Heart size={18} /> Recommendations
-                </Link>
-                <Link to="/cart" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/cart') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
-                  <ShoppingCart size={18} /> Cart {totalItems > 0 && <span className="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{totalItems}</span>}
-                </Link>
-                <Link to="/orders" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/orders') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
-                  <Clock size={18} /> Order History
-                </Link>
+              <div className="px-4 py-4 space-y-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur max-h-[calc(100dvh-4rem)] overflow-y-auto">
+                {user.role !== 'driver' && (
+                  <Link to="/common-foods" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/common-foods') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                    <Utensils size={18} /> Menu
+                  </Link>
+                )}
+                {user.role !== 'restaurant' && user.role !== 'driver' && (
+                  <>
+                    <Link to="/recommended-foods" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/recommended-foods') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                      <Heart size={18} /> Recommendations
+                    </Link>
+                    <Link to="/cart" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/cart') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                      <ShoppingCart size={18} /> Cart {totalItems > 0 && <span className="ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{totalItems}</span>}
+                    </Link>
+                    <Link to="/orders" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/orders') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                      <Clock size={18} /> Order History
+                    </Link>
+                  </>
+                )}
                 <Link to="/profile" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${isActive('/profile') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
                   <UserIcon size={18} /> Profile
                 </Link>
@@ -401,19 +431,13 @@ const Navbar: React.FC = () => {
 
       {/* ── Mobile Bottom Navigation ─────────────────── */}
       {user && (
-        <div className="md:hidden fixed bottom-0 left-0 w-full z-50 safe-area-bottom">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
           <div className="glass border-t border-gray-200 dark:border-gray-800 px-2 pb-safe pt-2 flex justify-around items-center">
-            {[
-              { to: '/common-foods', icon: <Home size={22} />, label: 'Home' },
-              { to: '/recommended-foods', icon: <Sparkles size={22} />, label: 'For You' },
-              { to: '/cart', icon: <ShoppingCart size={22} />, label: 'Cart', badge: totalItems },
-              { to: '/orders', icon: <Package size={22} />, label: 'Orders' },
-              { to: '/profile', icon: <UserIcon size={22} />, label: 'Profile' },
-            ].map(({ to, icon, label, badge }) => (
+            {bottomTabs.map(({ to, icon, label, badge }) => (
               <Link
                 key={to}
                 to={to}
-                className={`flex flex-col items-center py-1 px-2.5 relative transition-colors
+                className={`flex flex-col items-center justify-center flex-1 min-w-0 min-h-[48px] py-1 px-1 relative transition-colors
                   ${isActive(to) ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
               >
                 <div className="relative">

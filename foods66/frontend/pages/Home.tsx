@@ -37,7 +37,7 @@ const Home: React.FC = () => {
   if (loading || user) return null; // Avoid flashing content while redirecting
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+    <div className="min-h-dvh bg-gray-50 dark:bg-gray-950 flex flex-col">
       {/* Hero Section */}
       <div className="relative flex-1 flex flex-col justify-center overflow-hidden min-h-[80vh]">
         <AnimatePresence mode="sync">

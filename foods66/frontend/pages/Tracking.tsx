@@ -390,7 +390,7 @@ const Tracking: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4">
+      <div className="min-h-dvh bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4">
         <div className="w-12 h-12 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin mb-4"></div>
         <p className="text-gray-500 font-medium">Connecting to live tracking...</p>
       </div>
@@ -399,7 +399,7 @@ const Tracking: React.FC = () => {
 
   if (error || !trackingData) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-gray-100 dark:border-gray-800">
           <AlertCircle className="text-red-500 mx-auto mb-4" size={48} />
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Order Tracking</h2>
@@ -425,7 +425,7 @@ const Tracking: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20">
+    <div className="min-h-dvh bg-gray-50 dark:bg-gray-950 pb-20">
       {showConfetti && <Confetti />}
 
       <div className="max-w-[1100px] w-full mx-auto px-4 py-6">
@@ -446,7 +446,7 @@ const Tracking: React.FC = () => {
         </div>
 
         {/* Map Container */}
-        <div className="h-[400px] sm:h-[500px] w-full relative bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden shadow-inner border border-gray-200 dark:border-gray-800 mb-6">
+        <div className="h-[min(340px,50dvh)] sm:h-[500px] w-full relative bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden shadow-inner border border-gray-200 dark:border-gray-800 mb-6">
           <div ref={mapContainerRef} className="w-full h-full z-0" />
           
           {/* Live Badge Overlay */}
