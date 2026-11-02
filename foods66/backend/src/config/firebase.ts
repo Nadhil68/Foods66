@@ -81,7 +81,7 @@ export const initFirebase = () => {
     });
 
     const db = getAdminFirestore(appInstance);
-    db.settings({ ignoreUndefinedProperties: true });
+    db.settings({ ignoreUndefinedProperties: true, preferRest: true });
 
     firestoreInstance = db;
     authInstance = getAdminAuth(appInstance);

@@ -120,9 +120,15 @@ app.get(['/api/health', '/health'], async (_req, res) => {
   let firestoreStats: any = null;
   try {
     const db = getFirestore();
-    const fCountSnap = await db.collection('foods').count().get();
-    const uCountSnap = await db.collection('users').count().get();
-    const oCountSnap = await db.collection('orders').count().get();
+    const countPromise = Promise.all([
+      db.collection('foods').count().get(),
+      db.collection('users').count().get(),
+      db.collection('orders').count().get(),
+    ]);
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Firestore stats query timed out')), 4000)
+    );
+    const [fCountSnap, uCountSnap, oCountSnap] = await Promise.race([countPromise, timeoutPromise]) as any;
     firestoreStatus = 'connected';
     firestoreStats = {
       foods: fCountSnap.data().count,
@@ -311,7 +317,8 @@ io.on('connection', (socket) => {
   });
 });
 
-if (env.NODE_ENV !== 'test') {
+// Only start HTTP listener outside serverless (Vercel manages requests via exported app)
+if (!process.env.VERCEL && env.NODE_ENV !== 'test') {
   const listenPort = process.env.PORT || PORT || 5000;
   httpServer.listen(listenPort, () => {
     console.log(`🚀 Foods66 Server running on port ${listenPort}`);
