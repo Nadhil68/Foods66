@@ -3,7 +3,8 @@
   "services": {
     "backend": {
       "root": "foods66/backend",
-      "framework": "express"
+      "framework": "express",
+      "buildCommand": "npm run build"
     },
     "frontend": {
       "root": "foods66/frontend",

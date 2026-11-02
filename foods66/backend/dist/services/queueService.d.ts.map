@@ -1,0 +1,1 @@
+{"version":3,"file":"queueService.d.ts","sourceRoot":"","sources":["../../src/services/queueService.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,EAAE,MAAM,QAAQ,CAAC;AAGvC,QAAA,IAAI,iBAAiB,EAAE,KAAK,GAAG,IAAW,CAAC;AAC3C,QAAA,IAAI,kBAAkB,EAAE,MAAM,GAAG,IAAW,CAAC;AAmD7C,OAAO,EAAE,iBAAiB,EAAE,kBAAkB,EAAE,CAAC"}

@@ -8,6 +8,7 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "build": "tsc && esbuild src/server.ts --bundle --platform=node --target=node20 --format=esm --packages=external --outfile=dist/server.js",
+    "vercel-build": "npm run build",
     "seed": "tsx src/scripts/seed.ts",
     "seed:neon": "node src/scripts/seedNeon.js",
     "init-indexes": "tsx src/scripts/init-indexes.ts"

@@ -3,4 +3,6 @@
 serviceAccountKey.json
 *.serviceAccountKey.json
 node_modules/
-dist/
+# Keep dist/server.js tracked so Vercel always has the built artifact
+!dist/
+!dist/server.js

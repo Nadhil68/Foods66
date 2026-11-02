@@ -1,0 +1,1 @@
+{"version":3,"file":"analytics.d.ts","sourceRoot":"","sources":["../../src/routes/analytics.ts"],"names":[],"mappings":"AASA,QAAA,MAAM,MAAM,4CAAW,CAAC;AAExB;;GAEG;AACH,eAAO,MAAM,kBAAkB,GAAI,YAAY,MAAM,EAAE,cAAc,MAAM,EAAE,YAAY,MAAM,KAAG;IAAE,KAAK,EAAE,IAAI,CAAC;IAAC,GAAG,EAAE,IAAI,CAAA;CAwDzH,CAAC;AAicF,eAAe,MAAM,CAAC"}
