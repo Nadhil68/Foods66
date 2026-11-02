@@ -307,9 +307,10 @@ io.on('connection', (socket) => {
   });
 });
 
-if (env.NODE_ENV !== 'test' && !process.env.VERCEL) {
-  httpServer.listen(PORT, () => {
-    console.log(`🚀 Foods66 Server running on port ${PORT}`);
+if (env.NODE_ENV !== 'test') {
+  const listenPort = process.env.PORT || PORT || 5000;
+  httpServer.listen(listenPort, () => {
+    console.log(`🚀 Foods66 Server running on port ${listenPort}`);
   });
 }
 
