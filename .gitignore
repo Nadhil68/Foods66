@@ -10,6 +10,8 @@ package-lock.json.backup
 *.env
 !*.env.example
 !*.env.production.example
+*serviceAccountKey*.json
+serviceAccountKey.json
 
 # Database data directories
 **/db_data/
