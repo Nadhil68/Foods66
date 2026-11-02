@@ -71,8 +71,8 @@ app.use(cors({
 }));
 
 // Webhooks must be parsed as raw bytes before express.json() intercepts
-app.use('/api/webhooks', express.raw({ type: 'application/json' }), webhooksRouter);
-app.use('/api/payments/webhook', express.raw({ type: 'application/json' }), webhooksRouter);
+app.use(['/api/webhooks', '/webhooks'], express.raw({ type: 'application/json' }), webhooksRouter);
+app.use(['/api/payments/webhook', '/payments/webhook'], express.raw({ type: 'application/json' }), webhooksRouter);
 
 // JSON body parser with safe request limit
 app.use(express.json({ limit: '10mb' }));
@@ -85,22 +85,26 @@ try {
   console.error('⚠️ Firebase init warning during startup:', err.message || err);
 }
 
-// API Routes
-app.use('/api/users', usersRouter);
+// API Routes (Dual-mounted with and without /api prefix for seamless Vercel rewrites)
+const mountRoute = (routePath: string, router: any) => {
+  app.use(`/api${routePath}`, router);
+  app.use(routePath, router);
+};
 
-app.use('/api/foods', foodsRouter);
-app.use('/api/orders', ordersRouter);
-app.use('/api/ai', aiRouter);
-app.use('/api/search', searchRouter);
-app.use('/api/restaurants', restaurantsRouter);
-app.use('/api/coupons', couponsRouter);
-app.use('/api/admin/coupons', couponsRouter);
-app.use('/api/deliveries', deliveriesRouter);
-app.use('/api/analytics', analyticsRouter);
-app.use('/api/payments', paymentsRouter);
-app.use('/api/upload', uploadRouter);
-app.use('/api/feedback', feedbackRouter);
-app.use('/api/favorites', favoritesRouter);
+mountRoute('/users', usersRouter);
+mountRoute('/foods', foodsRouter);
+mountRoute('/orders', ordersRouter);
+mountRoute('/ai', aiRouter);
+mountRoute('/search', searchRouter);
+mountRoute('/restaurants', restaurantsRouter);
+mountRoute('/coupons', couponsRouter);
+mountRoute('/admin/coupons', couponsRouter);
+mountRoute('/deliveries', deliveriesRouter);
+mountRoute('/analytics', analyticsRouter);
+mountRoute('/payments', paymentsRouter);
+mountRoute('/upload', uploadRouter);
+mountRoute('/feedback', feedbackRouter);
+mountRoute('/favorites', favoritesRouter);
 
 // Serve static uploads (from project root /uploads)
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
@@ -110,8 +114,8 @@ app.get('/', (_req, res) => {
   res.send('Foods66 Enterprise API is running! Please access the frontend web application on port 3000.');
 });
 
-// Health check
-app.get('/api/health', async (_req, res) => {
+// Health check (supports both /api/health and /health)
+app.get(['/api/health', '/health'], async (_req, res) => {
   let firestoreStatus = 'disconnected';
   let firestoreStats: any = null;
   try {

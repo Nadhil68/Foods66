@@ -42,6 +42,26 @@ export class ObjectIdMock {
   }
 }
 
+/** Recursively strips undefined keys so Firestore never rejects payloads */
+export function removeUndefined<T>(obj: T): T {
+  if (obj === null || obj === undefined || typeof obj !== 'object') {
+    return obj;
+  }
+  if (obj instanceof Date || obj instanceof RegExp || (obj as any) instanceof ObjectIdMock) {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(removeUndefined) as any;
+  }
+  const result: any = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (value !== undefined) {
+      result[key] = removeUndefined(value);
+    }
+  }
+  return result;
+}
+
 // Utility to get nested property safely
 export function getNestedValue(obj: any, path: string): any {
   if (!obj || !path) return undefined;
@@ -233,7 +253,7 @@ export class FirestoreDocument<T = any> {
     const db = getFirestore();
     this.updatedAt = new Date();
     const plain = this.toObject();
-    await db.collection(this._collectionName).doc(this._id).set(plain, { merge: true });
+    await db.collection(this._collectionName).doc(this._id).set(removeUndefined(plain), { merge: true });
     return this;
   }
 
@@ -481,7 +501,7 @@ export function createFirestoreModel<T = any>(collectionName: string) {
         let currentData = { ...snap.data(), _id: snap.id, id: snap.id };
         const original = { ...currentData };
         currentData = applyUpdate(currentData, update);
-        await docRef.set(currentData, { merge: true });
+        await docRef.set(removeUndefined(currentData), { merge: true });
 
         const res = options.new ? currentData : original;
         return new FirestoreDocument(collectionName, res);
@@ -575,9 +595,10 @@ export function createFirestoreModel<T = any>(collectionName: string) {
             createdAt: item.createdAt || new Date(),
             updatedAt: item.updatedAt || new Date(),
           };
+          const sanitized = removeUndefined(docData);
           const ref = db.collection(collectionName).doc(id);
-          batch.set(ref, docData);
-          createdList.push(new FirestoreDocument(collectionName, docData));
+          batch.set(ref, sanitized);
+          createdList.push(new FirestoreDocument(collectionName, sanitized));
         }
         await batch.commit();
       }

@@ -23,13 +23,21 @@ function getToken(): string | null {
 
 /**
  * Extract a user-friendly error message from an API response.
- * Never exposes raw server internals to the user.
  */
 async function extractError(response: Response): Promise<string> {
   try {
     const data = await response.json();
     if (data.error && typeof data.error === 'string') {
       return data.error;
+    }
+    if (Array.isArray(data.errors) && data.errors.length > 0) {
+      const errorStrings = data.errors.map((e: any) => {
+        if (typeof e === 'string') return e;
+        return e.message || (e.field ? `${e.field}: invalid` : '');
+      }).filter(Boolean);
+      if (errorStrings.length > 0) {
+        return errorStrings.join(' | ');
+      }
     }
     if (data.message && typeof data.message === 'string') {
       return data.message;
@@ -44,9 +52,13 @@ async function extractError(response: Response): Promise<string> {
     case 401: return 'Authentication required. Please sign in.';
     case 403: return 'You do not have permission to perform this action.';
     case 404: return 'The requested resource was not found.';
-    case 409: return 'A conflict occurred. The resource may already exist.';
+    case 409: return 'An account with this email already exists.';
     case 429: return 'Too many requests. Please try again later.';
-    default: return 'An unexpected error occurred. Please try again.';
+    case 500: return 'Server error (500). Please try again later.';
+    case 502:
+    case 503:
+    case 504: return `Service temporarily unavailable (${response.status}). Please try again.`;
+    default: return `Request failed (${response.status}). Please try again.`;
   }
 }
 

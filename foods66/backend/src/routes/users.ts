@@ -39,21 +39,28 @@ router.post('/register', validateBody(registerSchema), async (req: Request, res:
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Format healthProfile if present
-    const formattedHealthProfile = healthProfile ? {
-      hasIssues: Boolean(healthProfile.hasIssues),
-      age: healthProfile.age ? Number(healthProfile.age) : undefined,
-      diseaseName: healthProfile.diseaseName || healthProfile.condition || '',
-      condition: healthProfile.condition || healthProfile.diseaseName || '',
-      stage: healthProfile.stage || healthProfile.severity || '1',
-      severity: healthProfile.severity || healthProfile.stage || '1',
-      medicines: healthProfile.medicines || healthProfile.medications || '',
-      medications: healthProfile.medications || healthProfile.medicines || '',
-      diagnosedBy: healthProfile.diagnosedBy || 'self',
-      symptoms: healthProfile.symptoms || '',
-      dietaryMemo: healthProfile.dietaryMemo || '',
-      validatedAt: new Date()
-    } : undefined;
+    // Format healthProfile if present and issues flagged
+    let formattedHealthProfile: any = undefined;
+    if (healthProfile && healthProfile.hasIssues) {
+      formattedHealthProfile = {
+        hasIssues: true,
+        diseaseName: healthProfile.diseaseName || healthProfile.condition || '',
+        condition: healthProfile.condition || healthProfile.diseaseName || '',
+        stage: healthProfile.stage || healthProfile.severity || '1',
+        severity: healthProfile.severity || healthProfile.stage || '1',
+        medicines: healthProfile.medicines || healthProfile.medications || '',
+        medications: healthProfile.medications || healthProfile.medicines || '',
+        diagnosedBy: healthProfile.diagnosedBy || 'self',
+        symptoms: healthProfile.symptoms || '',
+        dietaryMemo: healthProfile.dietaryMemo || '',
+        validatedAt: new Date()
+      };
+      if (healthProfile.age && !isNaN(Number(healthProfile.age))) {
+        formattedHealthProfile.age = Number(healthProfile.age);
+      }
+    } else if (healthProfile) {
+      formattedHealthProfile = { hasIssues: false };
+    }
 
     // SECURITY: Always assign 'customer' role server-side.
     // Never trust role from the request body.
@@ -65,13 +72,17 @@ router.post('/register', validateBody(registerSchema), async (req: Request, res:
       healthProfile: formattedHealthProfile
     });
 
-    // Add welcome email to background queue (only if queue service is available)
+    // Add welcome email to background queue (fire-and-forget, never fail registration)
     if (notificationQueue) {
-      await notificationQueue.add('sendEmail', {
-        to: email,
-        subject: 'Welcome to Foods66!',
-        body: 'Thank you for registering.'
-      });
+      try {
+        await notificationQueue.add('sendEmail', {
+          to: email,
+          subject: 'Welcome to Foods66!',
+          body: 'Thank you for registering.'
+        });
+      } catch (queueErr: any) {
+        logger.warn('Failed to add welcome email to queue:', queueErr?.message || queueErr);
+      }
     }
 
     if (user) {
