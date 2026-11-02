@@ -42691,35 +42691,34 @@ var require_jsonwebtoken = __commonJS({
 });
 
 // src/services/queueService.ts
-var import_bullmq, import_ioredis, notificationQueue, notificationWorker, isServerless, redisHost, bullRedis;
+var notificationQueue, notificationWorker, isServerless, redisHost;
 var init_queueService = __esm({
   "src/services/queueService.ts"() {
     "use strict";
-    import_bullmq = require("bullmq");
-    import_ioredis = __toESM(require("ioredis"));
     notificationQueue = null;
     notificationWorker = null;
     isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
     redisHost = process.env.REDIS_HOST;
-    bullRedis = null;
-    if (!isServerless && (redisHost || process.env.NODE_ENV !== "production")) {
-      bullRedis = new import_ioredis.default({
-        host: redisHost || "127.0.0.1",
-        port: parseInt(process.env.REDIS_PORT || "6379"),
-        maxRetriesPerRequest: null,
-        enableOfflineQueue: false,
-        lazyConnect: true,
-        retryStrategy: () => null
-      });
-      bullRedis.on("error", () => {
-      });
-    }
     (async () => {
-      if (!bullRedis) return;
+      if (isServerless || !redisHost && process.env.NODE_ENV === "production") {
+        return;
+      }
       try {
+        const { Queue, Worker } = await import("bullmq");
+        const { default: Redis } = await import("ioredis");
+        const bullRedis = new Redis({
+          host: redisHost || "127.0.0.1",
+          port: parseInt(process.env.REDIS_PORT || "6379"),
+          maxRetriesPerRequest: null,
+          enableOfflineQueue: false,
+          lazyConnect: true,
+          retryStrategy: () => null
+        });
+        bullRedis.on("error", () => {
+        });
         await bullRedis.ping();
-        notificationQueue = new import_bullmq.Queue("notifications", { connection: bullRedis });
-        notificationWorker = new import_bullmq.Worker(
+        notificationQueue = new Queue("notifications", { connection: bullRedis });
+        notificationWorker = new Worker(
           "notifications",
           async (job) => {
             if (job.name === "sendEmail") {
@@ -42735,8 +42734,6 @@ var init_queueService = __esm({
         });
         console.log("[Queue] BullMQ initialised successfully.");
       } catch {
-        console.warn("[Queue] Redis unavailable \u2014 queue service disabled. Start Redis to enable background jobs.");
-        bullRedis.disconnect();
       }
     })();
   }
@@ -106605,36 +106602,63 @@ var init_Food = __esm({
 });
 
 // src/services/cacheService.ts
-var import_ioredis2, redis, getCache, setCache;
+var redisInstance, isServerless2, redisHost2, memoryCache, getCache, setCache;
 var init_cacheService = __esm({
   "src/services/cacheService.ts"() {
     "use strict";
-    import_ioredis2 = __toESM(require("ioredis"));
-    redis = new import_ioredis2.default({
-      host: process.env.REDIS_HOST || "127.0.0.1",
-      port: parseInt(process.env.REDIS_PORT || "6379"),
-      lazyConnect: true,
-      enableOfflineQueue: false,
-      retryStrategy: () => null
-      // give up immediately, no reconnect loop
-    });
-    redis.on("error", () => {
-    });
-    getCache = async (key) => {
-      if (redis.status !== "ready") return null;
-      try {
-        const data = await redis.get(key);
-        return data ? JSON.parse(data) : null;
-      } catch {
-        return null;
+    redisInstance = null;
+    isServerless2 = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+    redisHost2 = process.env.REDIS_HOST;
+    memoryCache = /* @__PURE__ */ new Map();
+    (async () => {
+      if (isServerless2 || !redisHost2 && process.env.NODE_ENV === "production") {
+        return;
       }
+      try {
+        const { default: Redis } = await import("ioredis");
+        redisInstance = new Redis({
+          host: redisHost2 || "127.0.0.1",
+          port: parseInt(process.env.REDIS_PORT || "6379"),
+          lazyConnect: true,
+          enableOfflineQueue: false,
+          retryStrategy: () => null
+        });
+        redisInstance.on("error", () => {
+        });
+      } catch {
+      }
+    })();
+    getCache = async (key) => {
+      if (redisInstance && redisInstance.status === "ready") {
+        try {
+          const data = await redisInstance.get(key);
+          return data ? JSON.parse(data) : null;
+        } catch {
+          return null;
+        }
+      }
+      const cached2 = memoryCache.get(key);
+      if (cached2) {
+        if (Date.now() > cached2.expiry) {
+          memoryCache.delete(key);
+          return null;
+        }
+        return cached2.value;
+      }
+      return null;
     };
     setCache = async (key, value, ttlSeconds = 3600) => {
-      if (redis.status !== "ready") return;
-      try {
-        await redis.setex(key, ttlSeconds, JSON.stringify(value));
-      } catch {
+      if (redisInstance && redisInstance.status === "ready") {
+        try {
+          await redisInstance.setex(key, ttlSeconds, JSON.stringify(value));
+          return;
+        } catch {
+        }
       }
+      memoryCache.set(key, {
+        value,
+        expiry: Date.now() + ttlSeconds * 1e3
+      });
     };
   }
 });
@@ -140173,7 +140197,7 @@ async function getSharp() {
   sharpChecked = true;
   return sharpInstance;
 }
-var import_express12, import_path3, import_fs4, router12, sharpInstance, sharpChecked, isServerless2, uploadsDir, upload_default2;
+var import_express12, import_path3, import_fs4, router12, sharpInstance, sharpChecked, isServerless3, uploadsDir, upload_default2;
 var init_upload2 = __esm({
   "src/routes/upload.ts"() {
     "use strict";
@@ -140186,8 +140210,8 @@ var init_upload2 = __esm({
     router12 = (0, import_express12.Router)();
     sharpInstance = null;
     sharpChecked = false;
-    isServerless2 = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
-    uploadsDir = isServerless2 ? import_path3.default.join("/tmp", "uploads", "foods") : import_path3.default.join(__dirname, "../../../uploads/foods");
+    isServerless3 = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+    uploadsDir = isServerless3 ? import_path3.default.join("/tmp", "uploads", "foods") : import_path3.default.join(process.cwd(), "uploads", "foods");
     try {
       if (!import_fs4.default.existsSync(uploadsDir)) {
         import_fs4.default.mkdirSync(uploadsDir, { recursive: true });

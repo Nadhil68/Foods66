@@ -24,7 +24,7 @@ async function getSharp() {
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const uploadsDir = isServerless
   ? path.join('/tmp', 'uploads', 'foods')
-  : path.join(__dirname, '../../../uploads/foods');
+  : path.join(process.cwd(), 'uploads', 'foods');
 
 try {
   if (!fs.existsSync(uploadsDir)) {
