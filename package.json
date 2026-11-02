@@ -2,6 +2,22 @@
   "name": "foods66-root",
   "version": "1.0.0",
   "dependencies": {
-    "@supabase/supabase-js": "^2.118.0"
+    "@google/genai": "^2.12.0",
+    "@supabase/supabase-js": "^2.118.0",
+    "axios": "^1.18.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^8.6.0",
+    "firebase-admin": "^14.5.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.0",
+    "multer": "^2.2.0",
+    "socket.io": "^4.8.3",
+    "stripe": "^22.5.0",
+    "uuid": "^14.0.1",
+    "zod": "^4.5.4"
   }
 }
