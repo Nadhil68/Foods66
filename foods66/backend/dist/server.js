@@ -1,5 +1,10 @@
+"use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
 };
@@ -7,21 +12,38 @@ var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/services/queueService.ts
-import { Queue, Worker } from "bullmq";
-import Redis from "ioredis";
-var notificationQueue, notificationWorker, isServerless, redisHost, bullRedis;
+var import_bullmq, import_ioredis, notificationQueue, notificationWorker, isServerless, redisHost, bullRedis;
 var init_queueService = __esm({
   "src/services/queueService.ts"() {
     "use strict";
+    import_bullmq = require("bullmq");
+    import_ioredis = __toESM(require("ioredis"));
     notificationQueue = null;
     notificationWorker = null;
     isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
     redisHost = process.env.REDIS_HOST;
     bullRedis = null;
     if (!isServerless && (redisHost || process.env.NODE_ENV !== "production")) {
-      bullRedis = new Redis({
+      bullRedis = new import_ioredis.default({
         host: redisHost || "127.0.0.1",
         port: parseInt(process.env.REDIS_PORT || "6379"),
         maxRetriesPerRequest: null,
@@ -36,8 +58,8 @@ var init_queueService = __esm({
       if (!bullRedis) return;
       try {
         await bullRedis.ping();
-        notificationQueue = new Queue("notifications", { connection: bullRedis });
-        notificationWorker = new Worker(
+        notificationQueue = new import_bullmq.Queue("notifications", { connection: bullRedis });
+        notificationWorker = new import_bullmq.Worker(
           "notifications",
           async (job) => {
             if (job.name === "sendEmail") {
@@ -70,28 +92,26 @@ var init_defaultCredentials = __esm({
 });
 
 // src/config/firebase.ts
-import { initializeApp, getApps, cert } from "firebase-admin/app";
-import { getFirestore as getAdminFirestore } from "firebase-admin/firestore";
-import { getAuth as getAdminAuth } from "firebase-admin/auth";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-var __filename, __dirname, appInstance, firestoreInstance, authInstance, initFirebase, getFirestore;
+var import_app, import_firestore, import_auth, import_path, import_fs, _dirname, appInstance, firestoreInstance, authInstance, initFirebase, getFirestore;
 var init_firebase = __esm({
   "src/config/firebase.ts"() {
     "use strict";
+    import_app = require("firebase-admin/app");
+    import_firestore = require("firebase-admin/firestore");
+    import_auth = require("firebase-admin/auth");
+    import_path = __toESM(require("path"));
+    import_fs = __toESM(require("fs"));
     init_defaultCredentials();
-    __filename = fileURLToPath(import.meta.url);
-    __dirname = path.dirname(__filename);
+    _dirname = typeof __dirname !== "undefined" ? __dirname : process.cwd();
     appInstance = null;
     firestoreInstance = null;
     authInstance = null;
     initFirebase = () => {
-      const existingApps = getApps();
+      const existingApps = (0, import_app.getApps)();
       if (existingApps.length > 0) {
         appInstance = existingApps[0];
-        firestoreInstance = getAdminFirestore(appInstance);
-        authInstance = getAdminAuth(appInstance);
+        firestoreInstance = (0, import_firestore.getFirestore)(appInstance);
+        authInstance = (0, import_auth.getAuth)(appInstance);
         return {
           db: firestoreInstance,
           auth: authInstance
@@ -100,17 +120,17 @@ var init_firebase = __esm({
       try {
         let credential;
         const possiblePaths = [
-          path.join(__dirname, "serviceAccountKey.json"),
-          path.join(__dirname, "..", "serviceAccountKey.json"),
-          path.join(__dirname, "..", "..", "serviceAccountKey.json"),
-          path.join(process.cwd(), "serviceAccountKey.json"),
-          path.join(process.cwd(), "backend", "serviceAccountKey.json")
+          import_path.default.join(_dirname, "serviceAccountKey.json"),
+          import_path.default.join(_dirname, "..", "serviceAccountKey.json"),
+          import_path.default.join(_dirname, "..", "..", "serviceAccountKey.json"),
+          import_path.default.join(process.cwd(), "serviceAccountKey.json"),
+          import_path.default.join(process.cwd(), "backend", "serviceAccountKey.json")
         ];
         let fileLoaded = false;
         for (const p of possiblePaths) {
-          if (fs.existsSync(p)) {
-            const fileData = JSON.parse(fs.readFileSync(p, "utf8"));
-            credential = cert(fileData);
+          if (import_fs.default.existsSync(p)) {
+            const fileData = JSON.parse(import_fs.default.readFileSync(p, "utf8"));
+            credential = (0, import_app.cert)(fileData);
             console.log(`\u{1F511} Firebase credentials loaded from file: ${p}`);
             fileLoaded = true;
             break;
@@ -118,10 +138,10 @@ var init_firebase = __esm({
         }
         if (!fileLoaded && process.env.FIREBASE_SERVICE_ACCOUNT) {
           const parsed = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-          credential = cert(parsed);
+          credential = (0, import_app.cert)(parsed);
           console.log("\u{1F511} Firebase credentials loaded from FIREBASE_SERVICE_ACCOUNT env var");
         } else if (!fileLoaded && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
-          credential = cert({
+          credential = (0, import_app.cert)({
             projectId: process.env.FIREBASE_PROJECT_ID || "foods66-3e9a5",
             clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
             privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
@@ -131,7 +151,7 @@ var init_firebase = __esm({
           try {
             const decoded = Buffer.from(DEFAULT_FIREBASE_CREDENTIALS_B64, "base64").toString("utf8");
             const parsed = JSON.parse(decoded);
-            credential = cert(parsed);
+            credential = (0, import_app.cert)(parsed);
             console.log("\u{1F511} Firebase credentials loaded from embedded default fallback");
           } catch (err) {
             console.error("\u26A0\uFE0F Could not parse embedded fallback credentials:", err.message);
@@ -141,14 +161,14 @@ var init_firebase = __esm({
           console.error("\u274C No Firebase credentials found! Set FIREBASE_SERVICE_ACCOUNT env var on Vercel.");
           throw new Error("Firebase credentials not configured. Set FIREBASE_SERVICE_ACCOUNT environment variable.");
         }
-        appInstance = initializeApp({
+        appInstance = (0, import_app.initializeApp)({
           credential,
           projectId: "foods66-3e9a5"
         });
-        const db = getAdminFirestore(appInstance);
+        const db = (0, import_firestore.getFirestore)(appInstance);
         db.settings({ ignoreUndefinedProperties: true, preferRest: true });
         firestoreInstance = db;
-        authInstance = getAdminAuth(appInstance);
+        authInstance = (0, import_auth.getAuth)(appInstance);
         console.log("\u{1F525} Live Firebase Firestore connected successfully for project: foods66-3e9a5");
         return { db, auth: authInstance };
       } catch (error) {
@@ -167,7 +187,6 @@ var init_firebase = __esm({
 });
 
 // src/models/firestoreModel.ts
-import crypto from "crypto";
 function removeUndefined(obj) {
   if (obj === null || obj === void 0 || typeof obj !== "object") {
     return obj;
@@ -447,7 +466,7 @@ function createFirestoreModel(collectionName) {
         const chunk = items.slice(i, i + 400);
         const batch = db.batch();
         for (const item of chunk) {
-          const id = String(item._id || item.id || crypto.randomBytes(12).toString("hex"));
+          const id = String(item._id || item.id || import_crypto.default.randomBytes(12).toString("hex"));
           const docData = {
             ...item,
             _id: id,
@@ -606,17 +625,18 @@ function createFirestoreModel(collectionName) {
     }
   };
 }
-var ObjectIdMock, FirestoreDocument, QueryBuilder;
+var import_crypto, ObjectIdMock, FirestoreDocument, QueryBuilder;
 var init_firestoreModel = __esm({
   "src/models/firestoreModel.ts"() {
     "use strict";
     init_firebase();
+    import_crypto = __toESM(require("crypto"));
     ObjectIdMock = class {
       constructor(id) {
         if (id) {
           this._str = id.toString();
         } else {
-          this._str = crypto.randomBytes(12).toString("hex");
+          this._str = import_crypto.default.randomBytes(12).toString("hex");
         }
       }
       toString() {
@@ -645,7 +665,7 @@ var init_firestoreModel = __esm({
     FirestoreDocument = class {
       constructor(collectionName, data) {
         this._collectionName = collectionName;
-        const docId = String(data._id || data.id || crypto.randomBytes(12).toString("hex"));
+        const docId = String(data._id || data.id || import_crypto.default.randomBytes(12).toString("hex"));
         this._id = docId;
         this.id = docId;
         Object.assign(this, data);
@@ -807,12 +827,12 @@ var init_firestoreModel = __esm({
 });
 
 // src/config/envConfig.ts
-import dotenv from "dotenv";
-var JWT_SECRET, MONGODB_URI, FIREBASE_PROJECT_ID, GEMINI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PUBLISHABLE_KEY, NODE_ENV, PORT, CLIENT_URL, env;
+var import_dotenv, JWT_SECRET, MONGODB_URI, FIREBASE_PROJECT_ID, GEMINI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PUBLISHABLE_KEY, NODE_ENV, PORT, CLIENT_URL, env;
 var init_envConfig = __esm({
   "src/config/envConfig.ts"() {
     "use strict";
-    dotenv.config();
+    import_dotenv = __toESM(require("dotenv"));
+    import_dotenv.default.config();
     JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) {
       console.warn(
@@ -933,11 +953,11 @@ var init_User = __esm({
 });
 
 // src/middlewares/auth.ts
-import jwt from "jsonwebtoken";
-var protect, authorize;
+var import_jsonwebtoken, protect, authorize;
 var init_auth = __esm({
   "src/middlewares/auth.ts"() {
     "use strict";
+    import_jsonwebtoken = __toESM(require("jsonwebtoken"));
     init_User();
     init_envConfig();
     init_logger();
@@ -946,7 +966,7 @@ var init_auth = __esm({
       if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         try {
           token = req.headers.authorization.split(" ")[1];
-          const decoded = jwt.verify(token, env.JWT_SECRET);
+          const decoded = import_jsonwebtoken.default.verify(token, env.JWT_SECRET);
           const user = await User.findById(decoded.id).select("-password");
           if (!user) {
             logger.security("AUTH_USER_NOT_FOUND", "Token valid but user not found in database", { decodedId: decoded.id });
@@ -1537,11 +1557,11 @@ var init_healthValidation = __esm({
 });
 
 // src/middlewares/validation.ts
-import { z } from "zod";
-var validateBody, mongoId, registerSchema, loginSchema, createFoodSchema, updateFoodSchema, updateOrderStatusSchema, feedbackSchema, couponCreateSchema, aiChatSchema, reviewSchema;
+var import_zod, validateBody, mongoId, registerSchema, loginSchema, createFoodSchema, updateFoodSchema, updateOrderStatusSchema, feedbackSchema, couponCreateSchema, aiChatSchema, reviewSchema;
 var init_validation = __esm({
   "src/middlewares/validation.ts"() {
     "use strict";
+    import_zod = require("zod");
     init_firestoreModel();
     validateBody = (schema) => {
       return (req, res, next) => {
@@ -1563,52 +1583,52 @@ var init_validation = __esm({
         next();
       };
     };
-    mongoId = z.string().refine(
+    mongoId = import_zod.z.string().refine(
       (val) => ObjectIdMock.isValid(val),
       { message: "Invalid ID format" }
     );
-    registerSchema = z.object({
-      name: z.string().min(1, "Name is required").max(100),
-      email: z.string().email("Invalid email address").max(255),
-      password: z.string().min(6, "Password must be at least 6 characters").max(128),
-      healthProfile: z.object({
-        hasIssues: z.boolean().optional(),
-        age: z.union([z.number(), z.string()]).optional(),
-        diseaseName: z.string().optional(),
-        condition: z.string().optional(),
-        stage: z.string().optional(),
-        severity: z.string().optional(),
-        medicines: z.string().optional(),
-        medications: z.string().optional(),
-        diagnosedBy: z.string().optional(),
-        symptoms: z.string().optional(),
-        dietaryMemo: z.string().optional()
+    registerSchema = import_zod.z.object({
+      name: import_zod.z.string().min(1, "Name is required").max(100),
+      email: import_zod.z.string().email("Invalid email address").max(255),
+      password: import_zod.z.string().min(6, "Password must be at least 6 characters").max(128),
+      healthProfile: import_zod.z.object({
+        hasIssues: import_zod.z.boolean().optional(),
+        age: import_zod.z.union([import_zod.z.number(), import_zod.z.string()]).optional(),
+        diseaseName: import_zod.z.string().optional(),
+        condition: import_zod.z.string().optional(),
+        stage: import_zod.z.string().optional(),
+        severity: import_zod.z.string().optional(),
+        medicines: import_zod.z.string().optional(),
+        medications: import_zod.z.string().optional(),
+        diagnosedBy: import_zod.z.string().optional(),
+        symptoms: import_zod.z.string().optional(),
+        dietaryMemo: import_zod.z.string().optional()
       }).optional()
     });
-    loginSchema = z.object({
-      email: z.string().email("Invalid email address").max(255),
-      password: z.string().min(1, "Password is required").max(128)
+    loginSchema = import_zod.z.object({
+      email: import_zod.z.string().email("Invalid email address").max(255),
+      password: import_zod.z.string().min(1, "Password is required").max(128)
     });
-    createFoodSchema = z.object({
-      name: z.string().min(1, "Food name is required").max(200),
-      description: z.string().min(1, "Description is required").max(2e3),
-      price: z.number().min(1, "Price must be at least \u20B91").max(1e5),
-      category: z.string().min(1, "Category is required").max(100),
-      image: z.string().min(1, "Image is required"),
-      available: z.boolean().optional().default(true),
-      stock: z.number().int().min(0).optional().default(100)
+    createFoodSchema = import_zod.z.object({
+      name: import_zod.z.string().min(1, "Food name is required").max(200),
+      description: import_zod.z.string().min(1, "Description is required").max(2e3),
+      price: import_zod.z.number().min(1, "Price must be at least \u20B91").max(1e5),
+      category: import_zod.z.string().min(1, "Category is required").max(100),
+      image: import_zod.z.string().min(1, "Image is required"),
+      available: import_zod.z.boolean().optional().default(true),
+      stock: import_zod.z.number().int().min(0).optional().default(100)
     });
-    updateFoodSchema = z.object({
-      name: z.string().min(1).max(200).optional(),
-      description: z.string().min(1).max(2e3).optional(),
-      price: z.number().min(1).max(1e5).optional(),
-      category: z.string().min(1).max(100).optional(),
-      image: z.string().optional().nullable(),
-      available: z.boolean().optional(),
-      stock: z.number().int().min(0).optional()
+    updateFoodSchema = import_zod.z.object({
+      name: import_zod.z.string().min(1).max(200).optional(),
+      description: import_zod.z.string().min(1).max(2e3).optional(),
+      price: import_zod.z.number().min(1).max(1e5).optional(),
+      category: import_zod.z.string().min(1).max(100).optional(),
+      image: import_zod.z.string().optional().nullable(),
+      available: import_zod.z.boolean().optional(),
+      stock: import_zod.z.number().int().min(0).optional()
     });
-    updateOrderStatusSchema = z.object({
-      status: z.enum([
+    updateOrderStatusSchema = import_zod.z.object({
+      status: import_zod.z.enum([
         "PLACED",
         "PAYMENT_PENDING",
         "PAID",
@@ -1625,56 +1645,56 @@ var init_validation = __esm({
         "REFUNDED",
         "FAILED"
       ]),
-      note: z.string().max(500).optional().default("")
+      note: import_zod.z.string().max(500).optional().default("")
     });
-    feedbackSchema = z.object({
-      orderId: z.string().min(1, "Order ID is required"),
-      rating: z.number().int().min(1).max(5),
-      deliveryRating: z.number().int().min(1).max(5),
-      comment: z.string().max(2e3).optional().default("")
+    feedbackSchema = import_zod.z.object({
+      orderId: import_zod.z.string().min(1, "Order ID is required"),
+      rating: import_zod.z.number().int().min(1).max(5),
+      deliveryRating: import_zod.z.number().int().min(1).max(5),
+      comment: import_zod.z.string().max(2e3).optional().default("")
     });
-    couponCreateSchema = z.object({
-      code: z.string().min(1, "Code is required").max(50),
-      description: z.string().max(500).optional().default(""),
-      discountType: z.enum(["PERCENTAGE", "FIXED_AMOUNT", "FREE_DELIVERY"]),
-      discountValue: z.number().min(0),
-      minimumOrderAmount: z.number().min(0).optional().default(0),
-      maximumDiscount: z.number().min(0).optional(),
-      startDate: z.string().optional(),
-      expiryDate: z.string().min(1, "Expiry date is required"),
-      usageLimit: z.number().int().min(1).optional().default(100),
-      perUserLimit: z.number().int().min(1).optional().default(1),
-      applicableCategories: z.array(z.string()).optional().default([]),
-      applicableFoods: z.array(z.string()).optional().default([])
+    couponCreateSchema = import_zod.z.object({
+      code: import_zod.z.string().min(1, "Code is required").max(50),
+      description: import_zod.z.string().max(500).optional().default(""),
+      discountType: import_zod.z.enum(["PERCENTAGE", "FIXED_AMOUNT", "FREE_DELIVERY"]),
+      discountValue: import_zod.z.number().min(0),
+      minimumOrderAmount: import_zod.z.number().min(0).optional().default(0),
+      maximumDiscount: import_zod.z.number().min(0).optional(),
+      startDate: import_zod.z.string().optional(),
+      expiryDate: import_zod.z.string().min(1, "Expiry date is required"),
+      usageLimit: import_zod.z.number().int().min(1).optional().default(100),
+      perUserLimit: import_zod.z.number().int().min(1).optional().default(1),
+      applicableCategories: import_zod.z.array(import_zod.z.string()).optional().default([]),
+      applicableFoods: import_zod.z.array(import_zod.z.string()).optional().default([])
     });
-    aiChatSchema = z.object({
-      message: z.string().min(1, "Message is required").max(2e3),
-      healthProfile: z.object({
-        diseaseName: z.string().optional(),
-        dietaryMemo: z.string().optional(),
-        stage: z.string().optional(),
-        medicines: z.string().optional(),
-        hasIssues: z.boolean().optional()
+    aiChatSchema = import_zod.z.object({
+      message: import_zod.z.string().min(1, "Message is required").max(2e3),
+      healthProfile: import_zod.z.object({
+        diseaseName: import_zod.z.string().optional(),
+        dietaryMemo: import_zod.z.string().optional(),
+        stage: import_zod.z.string().optional(),
+        medicines: import_zod.z.string().optional(),
+        hasIssues: import_zod.z.boolean().optional()
       }).optional(),
-      history: z.array(z.object({
-        role: z.string(),
-        text: z.string()
+      history: import_zod.z.array(import_zod.z.object({
+        role: import_zod.z.string(),
+        text: import_zod.z.string()
       })).optional().default([])
     });
-    reviewSchema = z.object({
-      text: z.string().min(1, "Review text is required").max(2e3)
+    reviewSchema = import_zod.z.object({
+      text: import_zod.z.string().min(1, "Review text is required").max(2e3)
     });
   }
 });
 
 // src/routes/users.ts
-import { Router } from "express";
-import bcrypt from "bcryptjs";
-import jwt2 from "jsonwebtoken";
-var router, generateToken, users_default;
+var import_express, import_bcryptjs, import_jsonwebtoken2, router, generateToken, users_default;
 var init_users = __esm({
   "src/routes/users.ts"() {
     "use strict";
+    import_express = require("express");
+    import_bcryptjs = __toESM(require("bcryptjs"));
+    import_jsonwebtoken2 = __toESM(require("jsonwebtoken"));
     init_User();
     init_auth();
     init_queueService();
@@ -1682,9 +1702,9 @@ var init_users = __esm({
     init_envConfig();
     init_validation();
     init_logger();
-    router = Router();
+    router = (0, import_express.Router)();
     generateToken = (id) => {
-      return jwt2.sign({ id }, env.JWT_SECRET, {
+      return import_jsonwebtoken2.default.sign({ id }, env.JWT_SECRET, {
         expiresIn: "30d"
       });
     };
@@ -1700,8 +1720,8 @@ var init_users = __esm({
           res.status(409).json({ error: "An account with this email already exists" });
           return;
         }
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const salt = await import_bcryptjs.default.genSalt(10);
+        const hashedPassword = await import_bcryptjs.default.hash(password, salt);
         let formattedHealthProfile = void 0;
         if (healthProfile && healthProfile.hasIssues) {
           formattedHealthProfile = {
@@ -1767,7 +1787,7 @@ var init_users = __esm({
           return;
         }
         const user = await User.findOne({ email });
-        if (user && await bcrypt.compare(password, user.password)) {
+        if (user && await import_bcryptjs.default.compare(password, user.password)) {
           res.json({
             token: generateToken(user._id.toString()),
             user: {
@@ -2059,13 +2079,13 @@ Provide a 2-sentence dietary summary.`;
           res.status(404).json({ success: false, message: "User not found" });
           return;
         }
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        const isMatch = await import_bcryptjs.default.compare(currentPassword, user.password);
         if (!isMatch) {
           res.status(401).json({ success: false, message: "Current password is incorrect" });
           return;
         }
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(newPassword, salt);
+        const salt = await import_bcryptjs.default.genSalt(10);
+        user.password = await import_bcryptjs.default.hash(newPassword, salt);
         await user.save();
         res.json({ success: true, message: "Password changed successfully" });
       } catch (error) {
@@ -2091,12 +2111,12 @@ var init_Food = __esm({
 });
 
 // src/services/cacheService.ts
-import Redis2 from "ioredis";
-var redis, getCache, setCache;
+var import_ioredis2, redis, getCache, setCache;
 var init_cacheService = __esm({
   "src/services/cacheService.ts"() {
     "use strict";
-    redis = new Redis2({
+    import_ioredis2 = __toESM(require("ioredis"));
+    redis = new import_ioredis2.default({
       host: process.env.REDIS_HOST || "127.0.0.1",
       port: parseInt(process.env.REDIS_PORT || "6379"),
       lazyConnect: true,
@@ -2162,22 +2182,19 @@ var init_pricingService = __esm({
 });
 
 // src/routes/foods.ts
-import { Router as Router2 } from "express";
-import fs2 from "fs";
-import path2 from "path";
-import { fileURLToPath as fileURLToPath2 } from "url";
-var __filename2, __dirname2, router2, foods_default;
+var import_express2, import_fs2, import_path2, router2, foods_default;
 var init_foods = __esm({
   "src/routes/foods.ts"() {
     "use strict";
+    import_express2 = require("express");
     init_Food();
     init_cacheService();
     init_auth();
     init_validation();
     init_pricingService();
-    __filename2 = fileURLToPath2(import.meta.url);
-    __dirname2 = path2.dirname(__filename2);
-    router2 = Router2();
+    import_fs2 = __toESM(require("fs"));
+    import_path2 = __toESM(require("path"));
+    router2 = (0, import_express2.Router)();
     router2.get("/", async (req, res) => {
       try {
         const category = req.query.category;
@@ -2289,10 +2306,10 @@ var init_foods = __esm({
             `${baseName}-thumb.webp`
           ];
           toDelete.forEach((img) => {
-            const absolutePath = path2.join(__dirname2, "../../", img);
-            if (fs2.existsSync(absolutePath)) {
+            const absolutePath = import_path2.default.join(__dirname, "../../", img);
+            if (import_fs2.default.existsSync(absolutePath)) {
               try {
-                fs2.unlinkSync(absolutePath);
+                import_fs2.default.unlinkSync(absolutePath);
               } catch (err) {
                 console.error("Failed to delete old image:", img, err);
               }
@@ -2388,11 +2405,11 @@ __export(orders_exports, {
   isValidOrderTransition: () => isValidOrderTransition,
   triggerAutoDeliveryAssignment: () => triggerAutoDeliveryAssignment
 });
-import { Router as Router3 } from "express";
-var router3, VALID_TRANSITIONS, isValidOrderTransition, triggerAutoDeliveryAssignment, updateOrderStatusHandler, orders_default;
+var import_express3, router3, VALID_TRANSITIONS, isValidOrderTransition, triggerAutoDeliveryAssignment, updateOrderStatusHandler, orders_default;
 var init_orders = __esm({
   "src/routes/orders.ts"() {
     "use strict";
+    import_express3 = require("express");
     init_firestoreModel();
     init_Order();
     init_Food();
@@ -2402,7 +2419,7 @@ var init_orders = __esm({
     init_auth();
     init_validation();
     init_pricingService();
-    router3 = Router3();
+    router3 = (0, import_express3.Router)();
     VALID_TRANSITIONS = {
       PLACED: ["PAYMENT_PENDING", "PAYMENT_CONFIRMED", "CANCELLED"],
       PAYMENT_PENDING: ["PAID", "PAYMENT_CONFIRMED", "CANCELLED", "FAILED"],
@@ -2880,21 +2897,21 @@ var init_orders = __esm({
 });
 
 // src/routes/ai.ts
-import { Router as Router4 } from "express";
-import { GoogleGenAI, Type } from "@google/genai";
-import rateLimit from "express-rate-limit";
-var router4, API_KEY, aiRateLimit, ai_default;
+var import_express4, import_genai, import_express_rate_limit, router4, API_KEY, aiRateLimit, ai_default;
 var init_ai = __esm({
   "src/routes/ai.ts"() {
     "use strict";
+    import_express4 = require("express");
+    import_genai = require("@google/genai");
     init_Food();
     init_auth();
     init_envConfig();
     init_validation();
     init_logger();
-    router4 = Router4();
+    import_express_rate_limit = __toESM(require("express-rate-limit"));
+    router4 = (0, import_express4.Router)();
     API_KEY = env.GEMINI_API_KEY;
-    aiRateLimit = rateLimit({
+    aiRateLimit = (0, import_express_rate_limit.default)({
       windowMs: 60 * 1e3,
       // 1 minute
       max: 15,
@@ -2943,10 +2960,10 @@ If the food is not on the menu, tell them gently. Do not hallucinate foods.
             name: "addToCart",
             description: "Adds a specific food item to the user's shopping cart.",
             parameters: {
-              type: Type.OBJECT,
+              type: import_genai.Type.OBJECT,
               properties: {
-                foodId: { type: Type.STRING, description: "The exact ID of the food item from the menu." },
-                quantity: { type: Type.INTEGER, description: "The number of items to order." }
+                foodId: { type: import_genai.Type.STRING, description: "The exact ID of the food item from the menu." },
+                quantity: { type: import_genai.Type.INTEGER, description: "The number of items to order." }
               },
               required: ["foodId", "quantity"]
             }
@@ -2983,7 +3000,7 @@ If the food is not on the menu, tell them gently. Do not hallucinate foods.
           res.end();
           return;
         }
-        const ai = new GoogleGenAI({ apiKey: API_KEY });
+        const ai = new import_genai.GoogleGenAI({ apiKey: API_KEY });
         const chat = ai.chats.create({
           model: "gemini-2.5-flash",
           config: {
@@ -3055,7 +3072,7 @@ If the food is not on the menu, tell them gently. Do not hallucinate foods.
       Based on the context, select the top 3 best matching food IDs from the menu.
       Return ONLY a JSON array of strings containing the IDs. Do not return markdown, just the raw JSON array.
     `;
-        const ai = new GoogleGenAI({ apiKey: API_KEY });
+        const ai = new import_genai.GoogleGenAI({ apiKey: API_KEY });
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash",
           contents: prompt
@@ -3118,7 +3135,7 @@ If the food is not on the menu, tell them gently. Do not hallucinate foods.
           return;
         }
         try {
-          const ai = new GoogleGenAI({ apiKey: API_KEY });
+          const ai = new import_genai.GoogleGenAI({ apiKey: API_KEY });
           const menuList = matchedFoods.slice(0, 25).map((f) => `- ID: ${f._id} | Name: ${f.name} | Category: ${f.category} | Price: \u20B9${f.price}`).join("\n");
           const prompt = `
         The patient has: ${healthProfile.diseaseName} (Stage ${healthProfile.stage || "1"}).
@@ -3165,7 +3182,7 @@ If the food is not on the menu, tell them gently. Do not hallucinate foods.
           res.json({ fallback: true });
           return;
         }
-        const ai = new GoogleGenAI({ apiKey: API_KEY });
+        const ai = new import_genai.GoogleGenAI({ apiKey: API_KEY });
         const prompt = `
       User: ${healthProfile.diseaseName} (Stage ${healthProfile.stage}).
       Food: ${foodName}.
@@ -3188,15 +3205,15 @@ If the food is not on the menu, tell them gently. Do not hallucinate foods.
 });
 
 // src/routes/search.ts
-import { Router as Router5 } from "express";
-import { GoogleGenAI as GoogleGenAI2 } from "@google/genai";
-var router5, API_KEY2, search_default;
+var import_express5, import_genai2, router5, API_KEY2, search_default;
 var init_search = __esm({
   "src/routes/search.ts"() {
     "use strict";
+    import_express5 = require("express");
+    import_genai2 = require("@google/genai");
     init_Food();
     init_envConfig();
-    router5 = Router5();
+    router5 = (0, import_express5.Router)();
     API_KEY2 = env.GEMINI_API_KEY;
     router5.post("/", async (req, res) => {
       try {
@@ -3233,7 +3250,7 @@ var init_search = __esm({
       
       Output ONLY valid JSON.
     `;
-        const ai = new GoogleGenAI2({ apiKey: API_KEY2 });
+        const ai = new import_genai2.GoogleGenAI({ apiKey: API_KEY2 });
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash",
           contents: prompt
@@ -3290,18 +3307,18 @@ var init_Restaurant = __esm({
 });
 
 // src/routes/restaurants.ts
-import { Router as Router6 } from "express";
-import { GoogleGenAI as GoogleGenAI3 } from "@google/genai";
-var router6, restaurants_default;
+var import_express6, import_genai3, router6, restaurants_default;
 var init_restaurants = __esm({
   "src/routes/restaurants.ts"() {
     "use strict";
+    import_express6 = require("express");
     init_Restaurant();
     init_auth();
     init_validation();
+    import_genai3 = require("@google/genai");
     init_envConfig();
     init_logger();
-    router6 = Router6();
+    router6 = (0, import_express6.Router)();
     router6.get("/", async (_req, res) => {
       try {
         const restaurants = await Restaurant.find({ verificationStatus: "verified" });
@@ -3394,7 +3411,7 @@ var init_restaurants = __esm({
         let sentimentScore = 0;
         if (env.GEMINI_API_KEY && !env.GEMINI_API_KEY.includes("PLACEHOLDER")) {
           try {
-            const ai = new GoogleGenAI3({ apiKey: env.GEMINI_API_KEY });
+            const ai = new import_genai3.GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
             const prompt = `Analyze the sentiment of the following restaurant review. Return a single number between -1.0 (extremely negative) and 1.0 (extremely positive). Do not include any other text, just the number.
 
 Review: "${text}"`;
@@ -3427,16 +3444,16 @@ Review: "${text}"`;
 });
 
 // src/routes/coupons.ts
-import { Router as Router7 } from "express";
-var router7, calculateCouponDiscount, getCouponsHandler, createCouponHandler, coupons_default;
+var import_express7, router7, calculateCouponDiscount, getCouponsHandler, createCouponHandler, coupons_default;
 var init_coupons = __esm({
   "src/routes/coupons.ts"() {
     "use strict";
+    import_express7 = require("express");
     init_Coupon();
     init_Order();
     init_Food();
     init_auth();
-    router7 = Router7();
+    router7 = (0, import_express7.Router)();
     calculateCouponDiscount = async (code, userId, items) => {
       const coupon = await Coupon.findOne({ code: code.toUpperCase().trim() });
       if (!coupon) {
@@ -3696,17 +3713,17 @@ var init_coupons = __esm({
 });
 
 // src/routes/deliveries.ts
-import { Router as Router8 } from "express";
-var router8, deliveries_default;
+var import_express8, router8, deliveries_default;
 var init_deliveries = __esm({
   "src/routes/deliveries.ts"() {
     "use strict";
+    import_express8 = require("express");
     init_firestoreModel();
     init_Delivery();
     init_Order();
     init_User();
     init_auth();
-    router8 = Router8();
+    router8 = (0, import_express8.Router)();
     router8.get("/", protect, authorize("driver", "admin", "restaurant"), async (req, res) => {
       try {
         const user = req.user;
@@ -4155,11 +4172,11 @@ var init_exportUtils = __esm({
 });
 
 // src/routes/analytics.ts
-import { Router as Router9 } from "express";
-var router9, getDateFilterRange, REVENUE_ORDER_MATCH, overviewAnalyticsHandler, analytics_default;
+var import_express9, router9, getDateFilterRange, REVENUE_ORDER_MATCH, overviewAnalyticsHandler, analytics_default;
 var init_analytics = __esm({
   "src/routes/analytics.ts"() {
     "use strict";
+    import_express9 = require("express");
     init_Order();
     init_User();
     init_Food();
@@ -4167,7 +4184,7 @@ var init_analytics = __esm({
     init_Coupon();
     init_auth();
     init_exportUtils();
-    router9 = Router9();
+    router9 = (0, import_express9.Router)();
     getDateFilterRange = (rangeType, customStart, customEnd) => {
       const now = /* @__PURE__ */ new Date();
       let start = new Date(now);
@@ -4599,13 +4616,13 @@ var init_analytics = __esm({
 });
 
 // src/routes/payments.ts
-import { Router as Router10 } from "express";
-import Stripe from "stripe";
-var router10, getStripeClient, createPaymentSessionHandler, payments_default;
+var import_express10, import_stripe, router10, getStripeClient, createPaymentSessionHandler, payments_default;
 var init_payments = __esm({
   "src/routes/payments.ts"() {
     "use strict";
+    import_express10 = require("express");
     init_firestoreModel();
+    import_stripe = __toESM(require("stripe"));
     init_auth();
     init_Order();
     init_Food();
@@ -4613,11 +4630,11 @@ var init_payments = __esm({
     init_pricingService();
     init_envConfig();
     init_logger();
-    router10 = Router10();
+    router10 = (0, import_express10.Router)();
     getStripeClient = () => {
       const secretKey = env.STRIPE_SECRET_KEY;
       if (!secretKey) return null;
-      return new Stripe(secretKey, {
+      return new import_stripe.default(secretKey, {
         apiVersion: "2023-10-16"
       });
     };
@@ -5063,25 +5080,25 @@ var init_payments = __esm({
 });
 
 // src/routes/webhooks.ts
-import { Router as Router11 } from "express";
-import Stripe2 from "stripe";
-var router11, handleStripeWebhook, webhooks_default;
+var import_express11, import_stripe2, router11, handleStripeWebhook, webhooks_default;
 var init_webhooks = __esm({
   "src/routes/webhooks.ts"() {
     "use strict";
+    import_express11 = require("express");
+    import_stripe2 = __toESM(require("stripe"));
     init_Order();
     init_Food();
     init_Coupon();
     init_envConfig();
     init_logger();
-    router11 = Router11();
+    router11 = (0, import_express11.Router)();
     handleStripeWebhook = async (req, res) => {
       const sig = req.headers["stripe-signature"];
       const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
       const secretKey = process.env.STRIPE_SECRET_KEY;
       let event;
       if (endpointSecret && secretKey && sig) {
-        const stripe = new Stripe2(secretKey, { apiVersion: "2023-10-16" });
+        const stripe = new import_stripe2.default(secretKey, { apiVersion: "2023-10-16" });
         try {
           event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
         } catch (err) {
@@ -5257,13 +5274,13 @@ var init_webhooks = __esm({
 });
 
 // src/middlewares/upload.ts
-import multer from "multer";
-var storage, upload, upload_default;
+var import_multer, storage, upload, upload_default;
 var init_upload = __esm({
   "src/middlewares/upload.ts"() {
     "use strict";
-    storage = multer.memoryStorage();
-    upload = multer({
+    import_multer = __toESM(require("multer"));
+    storage = import_multer.default.memoryStorage();
+    upload = (0, import_multer.default)({
       storage,
       limits: {
         fileSize: 5 * 1024 * 1024
@@ -5282,11 +5299,6 @@ var init_upload = __esm({
 });
 
 // src/routes/upload.ts
-import { Router as Router12 } from "express";
-import { v4 as uuid } from "uuid";
-import path3 from "path";
-import fs3 from "fs";
-import { fileURLToPath as fileURLToPath3 } from "url";
 async function getSharp() {
   if (sharpChecked) return sharpInstance;
   try {
@@ -5298,22 +5310,24 @@ async function getSharp() {
   sharpChecked = true;
   return sharpInstance;
 }
-var __filename3, __dirname3, router12, sharpInstance, sharpChecked, isServerless2, uploadsDir, upload_default2;
+var import_express12, import_uuid, import_path3, import_fs3, router12, sharpInstance, sharpChecked, isServerless2, uploadsDir, upload_default2;
 var init_upload2 = __esm({
   "src/routes/upload.ts"() {
     "use strict";
+    import_express12 = require("express");
     init_upload();
     init_auth();
-    __filename3 = fileURLToPath3(import.meta.url);
-    __dirname3 = path3.dirname(__filename3);
-    router12 = Router12();
+    import_uuid = require("uuid");
+    import_path3 = __toESM(require("path"));
+    import_fs3 = __toESM(require("fs"));
+    router12 = (0, import_express12.Router)();
     sharpInstance = null;
     sharpChecked = false;
     isServerless2 = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
-    uploadsDir = isServerless2 ? path3.join("/tmp", "uploads", "foods") : path3.join(__dirname3, "../../../uploads/foods");
+    uploadsDir = isServerless2 ? import_path3.default.join("/tmp", "uploads", "foods") : import_path3.default.join(__dirname, "../../../uploads/foods");
     try {
-      if (!fs3.existsSync(uploadsDir)) {
-        fs3.mkdirSync(uploadsDir, { recursive: true });
+      if (!import_fs3.default.existsSync(uploadsDir)) {
+        import_fs3.default.mkdirSync(uploadsDir, { recursive: true });
       }
     } catch (fsErr) {
       console.warn("\u26A0\uFE0F Could not create uploadsDir (read-only filesystem in serverless):", fsErr);
@@ -5353,15 +5367,15 @@ var init_upload2 = __esm({
           res.status(400).json({ success: false, message: "Image dimensions too large (max 10000x10000)", code: "IMAGE_TOO_LARGE" });
           return;
         }
-        const baseFilename = uuid();
+        const baseFilename = (0, import_uuid.v4)();
         const filename = `${baseFilename}.webp`;
-        const filepath = path3.join(uploadsDir, filename);
+        const filepath = import_path3.default.join(uploadsDir, filename);
         await sharp(req.file.buffer).resize({ width: 1200, height: 800, fit: "cover" }).webp({ quality: 85 }).toFile(filepath);
         const filenameMedium = `${baseFilename}-medium.webp`;
-        const filepathMedium = path3.join(uploadsDir, filenameMedium);
+        const filepathMedium = import_path3.default.join(uploadsDir, filenameMedium);
         await sharp(req.file.buffer).resize({ width: 600, height: 400, fit: "cover" }).webp({ quality: 85 }).toFile(filepathMedium);
         const filenameThumb = `${baseFilename}-thumb.webp`;
-        const filepathThumb = path3.join(uploadsDir, filenameThumb);
+        const filepathThumb = import_path3.default.join(uploadsDir, filenameThumb);
         await sharp(req.file.buffer).resize({ width: 300, height: 300, fit: "cover" }).webp({ quality: 85 }).toFile(filepathThumb);
         res.json({
           success: true,
@@ -5389,17 +5403,17 @@ var init_Feedback = __esm({
 });
 
 // src/routes/feedback.ts
-import { Router as Router13 } from "express";
-var router13, feedback_default;
+var import_express13, router13, feedback_default;
 var init_feedback = __esm({
   "src/routes/feedback.ts"() {
     "use strict";
+    import_express13 = require("express");
     init_auth();
     init_Feedback();
     init_Order();
     init_validation();
     init_logger();
-    router13 = Router13();
+    router13 = (0, import_express13.Router)();
     router13.post("/", protect, validateBody(feedbackSchema), async (req, res) => {
       try {
         const { orderId, rating, deliveryRating, comment } = req.body;
@@ -5475,16 +5489,16 @@ var init_Favorite = __esm({
 });
 
 // src/routes/favorites.ts
-import { Router as Router14 } from "express";
-var router14, favorites_default;
+var import_express14, router14, favorites_default;
 var init_favorites = __esm({
   "src/routes/favorites.ts"() {
     "use strict";
+    import_express14 = require("express");
     init_firestoreModel();
     init_Favorite();
     init_Food();
     init_auth();
-    router14 = Router14();
+    router14 = (0, import_express14.Router)();
     router14.get("/", protect, async (req, res) => {
       try {
         const userId = req.user?._id?.toString();
@@ -5576,14 +5590,14 @@ var init_favorites = __esm({
 });
 
 // src/middlewares/security.ts
-import helmet from "helmet";
-import rateLimit2 from "express-rate-limit";
-import mongoSanitize from "express-mongo-sanitize";
-var globalLimiter, authLimiter, setupSecurityMiddlewares;
+var import_helmet, import_express_rate_limit2, import_express_mongo_sanitize, globalLimiter, authLimiter, setupSecurityMiddlewares;
 var init_security = __esm({
   "src/middlewares/security.ts"() {
     "use strict";
-    globalLimiter = rateLimit2({
+    import_helmet = __toESM(require("helmet"));
+    import_express_rate_limit2 = __toESM(require("express-rate-limit"));
+    import_express_mongo_sanitize = __toESM(require("express-mongo-sanitize"));
+    globalLimiter = (0, import_express_rate_limit2.default)({
       windowMs: 15 * 60 * 1e3,
       // 15 minutes
       max: 1e3,
@@ -5592,7 +5606,7 @@ var init_security = __esm({
       standardHeaders: true,
       legacyHeaders: false
     });
-    authLimiter = rateLimit2({
+    authLimiter = (0, import_express_rate_limit2.default)({
       windowMs: 60 * 60 * 1e3,
       // 1 hour
       max: 20,
@@ -5602,8 +5616,8 @@ var init_security = __esm({
       legacyHeaders: false
     });
     setupSecurityMiddlewares = (app2) => {
-      app2.use(helmet());
-      app2.use(mongoSanitize());
+      app2.use((0, import_helmet.default)());
+      app2.use((0, import_express_mongo_sanitize.default)());
       app2.use("/api/", globalLimiter);
       app2.use("/api/users/login", authLimiter);
       app2.use("/api/users/register", authLimiter);
@@ -5619,16 +5633,15 @@ __export(server_exports, {
   httpServer: () => httpServer,
   io: () => io
 });
-import express4 from "express";
-import cors from "cors";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import jwt3 from "jsonwebtoken";
-import path4 from "path";
-import { fileURLToPath as fileURLToPath4 } from "url";
-var __filename4, __dirname4, app, PORT2, allowedOrigins, isAllowedOrigin, mountRoute, httpServer, io, server_default;
+module.exports = __toCommonJS(server_exports);
+var import_express15, import_cors, import_http, import_socket, import_jsonwebtoken3, import_path4, _dirname2, app, PORT2, allowedOrigins, isAllowedOrigin, mountRoute, httpServer, io, server_default;
 var init_server = __esm({
   "src/server.ts"() {
+    import_express15 = __toESM(require("express"));
+    import_cors = __toESM(require("cors"));
+    import_http = require("http");
+    import_socket = require("socket.io");
+    import_jsonwebtoken3 = __toESM(require("jsonwebtoken"));
     init_queueService();
     init_firebase();
     init_firestoreModel();
@@ -5648,10 +5661,10 @@ var init_server = __esm({
     init_upload2();
     init_feedback();
     init_favorites();
+    import_path4 = __toESM(require("path"));
     init_security();
-    __filename4 = fileURLToPath4(import.meta.url);
-    __dirname4 = path4.dirname(__filename4);
-    app = express4();
+    _dirname2 = typeof __dirname !== "undefined" ? __dirname : process.cwd();
+    app = (0, import_express15.default)();
     PORT2 = env.PORT;
     setupSecurityMiddlewares(app);
     allowedOrigins = [
@@ -5670,7 +5683,7 @@ var init_server = __esm({
       if (process.env.VERCEL_URL && origin.includes(process.env.VERCEL_URL)) return true;
       return false;
     };
-    app.use(cors({
+    app.use((0, import_cors.default)({
       origin: (origin, callback) => {
         if (!origin || isAllowedOrigin(origin) || Boolean(process.env.VERCEL) || env.NODE_ENV !== "production") {
           callback(null, true);
@@ -5682,10 +5695,10 @@ var init_server = __esm({
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "X-Idempotency-Key", "stripe-signature"]
     }));
-    app.use(["/api/webhooks", "/webhooks"], express4.raw({ type: "application/json" }), webhooks_default);
-    app.use(["/api/payments/webhook", "/payments/webhook"], express4.raw({ type: "application/json" }), webhooks_default);
-    app.use(express4.json({ limit: "10mb" }));
-    app.use(express4.urlencoded({ extended: true, limit: "10mb" }));
+    app.use(["/api/webhooks", "/webhooks"], import_express15.default.raw({ type: "application/json" }), webhooks_default);
+    app.use(["/api/payments/webhook", "/payments/webhook"], import_express15.default.raw({ type: "application/json" }), webhooks_default);
+    app.use(import_express15.default.json({ limit: "10mb" }));
+    app.use(import_express15.default.urlencoded({ extended: true, limit: "10mb" }));
     try {
       initFirebase();
     } catch (err) {
@@ -5709,7 +5722,7 @@ var init_server = __esm({
     mountRoute("/upload", upload_default2);
     mountRoute("/feedback", feedback_default);
     mountRoute("/favorites", favorites_default);
-    app.use("/uploads", express4.static(path4.join(__dirname4, "../../uploads")));
+    app.use("/uploads", import_express15.default.static(import_path4.default.join(_dirname2, "../../uploads")));
     app.get("/", (_req, res) => {
       res.send("Foods66 Enterprise API is running! Please access the frontend web application on port 3000.");
     });
@@ -5765,8 +5778,8 @@ var init_server = __esm({
         code
       });
     });
-    httpServer = createServer(app);
-    io = new Server(httpServer, {
+    httpServer = (0, import_http.createServer)(app);
+    io = new import_socket.Server(httpServer, {
       cors: {
         origin: (origin, callback) => {
           if (isAllowedOrigin(origin)) {
@@ -5783,7 +5796,7 @@ var init_server = __esm({
       const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(" ")[1];
       if (token) {
         try {
-          const decoded = jwt3.verify(token, env.JWT_SECRET);
+          const decoded = import_jsonwebtoken3.default.verify(token, env.JWT_SECRET);
           socket.userId = decoded.id;
         } catch (err) {
           socket.userId = null;
@@ -5888,9 +5901,9 @@ var init_server = __esm({
   }
 });
 init_server();
-export {
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
   app,
-  server_default as default,
   httpServer,
   io
-};
+});

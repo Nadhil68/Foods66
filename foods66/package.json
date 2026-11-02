@@ -1,7 +1,6 @@
 {
   "name": "foods66",
   "version": "1.0.0",
-  "type": "module",
   "dependencies": {
     "axios": "^1.20.0"
   }

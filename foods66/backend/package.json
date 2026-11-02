@@ -1,13 +1,12 @@
 {
   "name": "foods66-server",
   "version": "1.0.0",
-  "type": "module",
   "description": "Backend server for Foods66 app",
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
-    "build": "esbuild src/server.ts --bundle --platform=node --target=node20 --format=esm --packages=external --outfile=dist/server.js",
+    "build": "esbuild src/server.ts --bundle --platform=node --target=node20 --format=cjs --packages=external --outfile=dist/server.js",
     "vercel-build": "npm run build",
     "seed": "tsx src/scripts/seed.ts",
     "seed:neon": "node src/scripts/seedNeon.js",

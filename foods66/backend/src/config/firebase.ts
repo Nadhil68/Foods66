@@ -6,8 +6,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { DEFAULT_FIREBASE_CREDENTIALS_B64 } from './defaultCredentials';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _dirname = typeof __dirname !== 'undefined' ? __dirname : process.cwd();
 
 let appInstance: App | null = null;
 let firestoreInstance: Firestore | null = null;
@@ -30,9 +29,9 @@ export const initFirebase = () => {
 
     // Try multiple file locations for the service account key
     const possiblePaths = [
-      path.join(__dirname, 'serviceAccountKey.json'),
-      path.join(__dirname, '..', 'serviceAccountKey.json'),
-      path.join(__dirname, '..', '..', 'serviceAccountKey.json'),
+      path.join(_dirname, 'serviceAccountKey.json'),
+      path.join(_dirname, '..', 'serviceAccountKey.json'),
+      path.join(_dirname, '..', '..', 'serviceAccountKey.json'),
       path.join(process.cwd(), 'serviceAccountKey.json'),
       path.join(process.cwd(), 'backend', 'serviceAccountKey.json'),
     ];

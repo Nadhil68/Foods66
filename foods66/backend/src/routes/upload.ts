@@ -4,10 +4,6 @@ import { protect, authorize, AuthRequest } from '../middlewares/auth';
 import { v4 as uuid } from 'uuid';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const router = Router();
 

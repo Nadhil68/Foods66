@@ -28,8 +28,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { setupSecurityMiddlewares } from './middlewares/security';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _dirname = typeof __dirname !== 'undefined' ? __dirname : process.cwd();
 
 const app = express();
 const PORT = env.PORT;
@@ -107,7 +106,7 @@ mountRoute('/feedback', feedbackRouter);
 mountRoute('/favorites', favoritesRouter);
 
 // Serve static uploads (from project root /uploads)
-app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+app.use('/uploads', express.static(path.join(_dirname, '../../uploads')));
 
 // Root route
 app.get('/', (_req, res) => {
