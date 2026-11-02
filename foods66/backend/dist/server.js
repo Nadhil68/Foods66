@@ -5283,12 +5283,22 @@ var init_upload = __esm({
 
 // src/routes/upload.ts
 import { Router as Router12 } from "express";
-import sharp from "sharp";
 import { v4 as uuid } from "uuid";
 import path3 from "path";
 import fs3 from "fs";
 import { fileURLToPath as fileURLToPath3 } from "url";
-var __filename3, __dirname3, router12, uploadsDir, upload_default2;
+async function getSharp() {
+  if (sharpChecked) return sharpInstance;
+  try {
+    const sharpModule = await import("sharp");
+    sharpInstance = sharpModule.default || sharpModule;
+  } catch (e) {
+    sharpInstance = null;
+  }
+  sharpChecked = true;
+  return sharpInstance;
+}
+var __filename3, __dirname3, router12, sharpInstance, sharpChecked, isServerless2, uploadsDir, upload_default2;
 var init_upload2 = __esm({
   "src/routes/upload.ts"() {
     "use strict";
@@ -5297,14 +5307,26 @@ var init_upload2 = __esm({
     __filename3 = fileURLToPath3(import.meta.url);
     __dirname3 = path3.dirname(__filename3);
     router12 = Router12();
-    uploadsDir = path3.join(__dirname3, "../../../uploads/foods");
-    if (!fs3.existsSync(uploadsDir)) {
-      fs3.mkdirSync(uploadsDir, { recursive: true });
+    sharpInstance = null;
+    sharpChecked = false;
+    isServerless2 = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+    uploadsDir = isServerless2 ? path3.join("/tmp", "uploads", "foods") : path3.join(__dirname3, "../../../uploads/foods");
+    try {
+      if (!fs3.existsSync(uploadsDir)) {
+        fs3.mkdirSync(uploadsDir, { recursive: true });
+      }
+    } catch (fsErr) {
+      console.warn("\u26A0\uFE0F Could not create uploadsDir (read-only filesystem in serverless):", fsErr);
     }
     router12.post("/", protect, authorize("admin", "restaurant"), upload_default.single("image"), async (req, res) => {
       try {
         if (!req.file) {
           res.status(400).json({ success: false, message: "No image uploaded", code: "NO_IMAGE" });
+          return;
+        }
+        const sharp = await getSharp();
+        if (!sharp) {
+          res.status(503).json({ success: false, message: "Image processing is temporarily unavailable in this environment", code: "SHARP_UNAVAILABLE" });
           return;
         }
         let metadata;

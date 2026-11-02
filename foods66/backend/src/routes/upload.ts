@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import upload from '../middlewares/upload';
 import { protect, authorize, AuthRequest } from '../middlewares/auth';
-import sharp from 'sharp';
 import { v4 as uuid } from 'uuid';
 import path from 'path';
 import fs from 'fs';
@@ -12,10 +11,31 @@ const __dirname = path.dirname(__filename);
 
 const router = Router();
 
-// Ensure the uploads directory exists
-const uploadsDir = path.join(__dirname, '../../../uploads/foods');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+let sharpInstance: any = null;
+let sharpChecked = false;
+async function getSharp() {
+  if (sharpChecked) return sharpInstance;
+  try {
+    const sharpModule = await import('sharp');
+    sharpInstance = sharpModule.default || sharpModule;
+  } catch (e) {
+    sharpInstance = null;
+  }
+  sharpChecked = true;
+  return sharpInstance;
+}
+
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const uploadsDir = isServerless
+  ? path.join('/tmp', 'uploads', 'foods')
+  : path.join(__dirname, '../../../uploads/foods');
+
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (fsErr) {
+  console.warn('⚠️ Could not create uploadsDir (read-only filesystem in serverless):', fsErr);
 }
 
 /**
@@ -34,6 +54,12 @@ router.post('/', protect, authorize('admin', 'restaurant'), upload.single('image
   try {
     if (!req.file) {
       res.status(400).json({ success: false, message: 'No image uploaded', code: 'NO_IMAGE' });
+      return;
+    }
+
+    const sharp = await getSharp();
+    if (!sharp) {
+      res.status(503).json({ success: false, message: 'Image processing is temporarily unavailable in this environment', code: 'SHARP_UNAVAILABLE' });
       return;
     }
 
