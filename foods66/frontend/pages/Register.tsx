@@ -445,7 +445,7 @@ const Register: React.FC = () => {
       await handleGeoFallback();
     };
 
-    navigator.geolocation.getCurrentPosition(success, error, { enableHighAccuracy: true, timeout: 6000, maximumAge: 60000 });
+    navigator.geolocation.getCurrentPosition(success, error, { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 });
   };
 
   const geocodeAddress = async () => {

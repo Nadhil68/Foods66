@@ -4,6 +4,7 @@
     "backend": {
       "root": "foods66/backend",
       "framework": "express",
+      "entrypoint": "dist/server.js",
       "buildCommand": "npm run build"
     },
     "frontend": {
