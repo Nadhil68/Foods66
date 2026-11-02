@@ -1,0 +1,144 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  password        String
+  role            String   @default("customer")
+  phone           String?  @default("")
+  address         String?  @default("")
+  rewardPoints    Int      @default(0)
+  vehicle         String?  @default("Bike")
+  availability    Boolean  @default(true)
+  currentLocation Json?    @default("{\"type\":\"Point\",\"coordinates\":[80.2707,13.0827]}")
+  activeOrders    Int      @default(0)
+  rating          Float    @default(4.8)
+  isSuspended     Boolean  @default(false)
+  deliveryArea    String?  @default("Chennai Central")
+  healthProfile   Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([role, availability, activeOrders])
+  @@map("users")
+}
+
+model Restaurant {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?  @default("")
+  image           String?  @default("")
+  rating          Float    @default(4.5)
+  deliveryTime    String?  @default("30 mins")
+  cuisine         String?  @default("Multi-cuisine")
+  address         String?  @default("")
+  isOpen          Boolean  @default(true)
+  location        Json?    @default("{\"type\":\"Point\",\"coordinates\":[80.2707,13.0827]}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("restaurants")
+}
+
+model Food {
+  id              String   @id @default(uuid())
+  restaurantId    String?
+  name            String
+  description     String?  @default("")
+  price           Float
+  image           String?  @default("")
+  category        String
+  isVeg           Boolean  @default(false)
+  rating          Float    @default(4.5)
+  calories        Int?
+  prepTime        String?  @default("20 mins")
+  ingredients     Json?    @default("[]")
+  tags            Json?    @default("[]")
+  isAvailable     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category, price])
+  @@map("foods")
+}
+
+model Order {
+  id                String   @id @default(uuid())
+  userId            String
+  restaurantId      String?
+  items             Json     // [{ foodId, name, price, quantity, customization }]
+  totalPrice        Float
+  status            String   @default("PENDING")
+  deliveryAddress   String?  @default("")
+  paymentMethod     String?  @default("CARD")
+  paymentStatus     String   @default("PENDING")
+  sessionId         String?  @unique
+  deliveryPartnerId String?
+  cancelReason      String?
+  refundId          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId, status])
+  @@map("orders")
+}
+
+model Delivery {
+  id                String   @id @default(uuid())
+  orderId           String   @unique
+  deliveryPartnerId String?
+  status            String   @default("ASSIGNED")
+  currentLocation   Json?    @default("{\"type\":\"Point\",\"coordinates\":[80.2707,13.0827]}")
+  estimatedTime     String?  @default("30 mins")
+  pickedUpAt        DateTime?
+  deliveredAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("deliveries")
+}
+
+model Coupon {
+  id              String   @id @default(uuid())
+  code            String   @unique
+  discountPercent Float
+  maxDiscount     Float?
+  minOrderAmount  Float?   @default(0)
+  expiryDate      DateTime?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("coupons")
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  userId    String
+  orderId   String?
+  rating    Int      @default(5)
+  comment   String?  @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("feedback")
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  foodId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, foodId])
+  @@map("favorites")
+}

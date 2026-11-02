@@ -1,0 +1,8 @@
+{
+  "name": " FOODS66",
+  "description": "An intelligent, health-focused food ordering system that personalizes menus based on user health profiles using Gemini AI.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ]
+}

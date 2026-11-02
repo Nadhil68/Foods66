@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+**/node_modules/
+package-lock.json.backup
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+!*.env.example
+!*.env.production.example
+
+# Database data directories
+**/db_data/
+db_data/
+
+# Uploads & Media
+**/uploads/
+uploads/
+
+# Build & Mobile artifacts
+**/build/
+build/
+**/.dart_tool/
+.dart_tool/
+**/.gradle/
+.gradle/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Logs & temp
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

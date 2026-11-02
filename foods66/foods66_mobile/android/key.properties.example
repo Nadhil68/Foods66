@@ -1,0 +1,9 @@
+# Template for key.properties. 
+# Do NOT commit the actual key.properties file to version control.
+# Follow the official Flutter documentation to create a keystore.
+# Place your generated keystore in the android/app directory.
+
+storePassword=<password_from_previous_step>
+keyPassword=<password_from_previous_step>
+keyAlias=upload
+storeFile=upload-keystore.jks

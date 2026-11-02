@@ -1,0 +1,62 @@
+// REST Client requests - Install REST Client extension in VS Code
+// or use Postman (https://www.postman.com/)
+
+### Get all foods
+GET http://localhost:5000/api/foods
+
+### Get foods by category
+GET http://localhost:5000/api/foods?category=pizza
+
+### Get all users
+GET http://localhost:5000/api/users
+
+### Get all orders
+GET http://localhost:5000/api/orders
+
+### Get orders by user
+GET http://localhost:5000/api/orders?userId=user123
+
+### Create a new food
+POST http://localhost:5000/api/foods
+Content-Type: application/json
+
+{
+  "name": "Margherita Pizza",
+  "description": "Classic pizza with tomato and mozzarella",
+  "price": 12.99,
+  "category": "pizza",
+  "image": "pizza.jpg",
+  "available": true
+}
+
+### Create an order
+POST http://localhost:5000/api/orders
+Content-Type: application/json
+
+{
+  "userId": "user123",
+  "items": [
+    {
+      "foodId": "food1",
+      "quantity": 2,
+      "price": 12.99
+    }
+  ],
+  "totalPrice": 25.98,
+  "deliveryAddress": "123 Main St",
+  "status": "pending"
+}
+
+### Get order by ID
+GET http://localhost:5000/api/orders/REPLACE_WITH_ORDER_ID
+
+### Update order status
+PUT http://localhost:5000/api/orders/REPLACE_WITH_ORDER_ID
+Content-Type: application/json
+
+{
+  "status": "confirmed"
+}
+
+### Health check
+GET http://localhost:5000/api/health
