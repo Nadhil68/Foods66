@@ -87,9 +87,9 @@ router.post('/register', validateBody(registerSchema), async (req: Request, res:
     } else {
       res.status(400).json({ error: 'Invalid user data' });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Registration Error:', error);
-    res.status(500).json({ error: 'Server error during registration' });
+    res.status(500).json({ error: error?.message || 'Server error during registration' });
   }
 });
 
@@ -120,8 +120,9 @@ router.post('/login', validateBody(loginSchema), async (req: Request, res: Respo
       logger.security('LOGIN_FAILED', 'Invalid email or password attempt', { email: req.body.email, ip: req.ip });
       res.status(401).json({ error: 'Invalid email or password' });
     }
-  } catch (error) {
-    res.status(500).json({ error: 'Server error during login' });
+  } catch (error: any) {
+    console.error('Login Error:', error);
+    res.status(500).json({ error: error?.message || 'Server error during login' });
   }
 });
 

@@ -4,22 +4,28 @@ import Redis from 'ioredis';
 let notificationQueue: Queue | null = null;
 let notificationWorker: Worker | null = null;
 
-// Only initialise BullMQ when Redis is actually reachable.
-// Returning null from retryStrategy stops all reconnect attempts.
-const bullRedis = new Redis({
-  host: process.env.REDIS_HOST || '127.0.0.1',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  maxRetriesPerRequest: null,
-  enableOfflineQueue: false,        // don't queue commands while disconnected
-  lazyConnect: true,
-  retryStrategy: () => null,        // give up immediately — no retry loop
-});
+// Only initialise BullMQ when Redis is actually reachable and not in serverless.
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const redisHost = process.env.REDIS_HOST;
 
-bullRedis.on('error', () => {
-  // silence repeated ECONNREFUSED noise
-});
+let bullRedis: Redis | null = null;
+if (!isServerless && (redisHost || process.env.NODE_ENV !== 'production')) {
+  bullRedis = new Redis({
+    host: redisHost || '127.0.0.1',
+    port: parseInt(process.env.REDIS_PORT || '6379'),
+    maxRetriesPerRequest: null,
+    enableOfflineQueue: false,
+    lazyConnect: true,
+    retryStrategy: () => null,
+  });
+
+  bullRedis.on('error', () => {
+    // silence repeated ECONNREFUSED noise
+  });
+}
 
 (async () => {
+  if (!bullRedis) return;
   try {
     await bullRedis.ping();          // will throw if Redis isn't up
     notificationQueue = new Queue('notifications', { connection: bullRedis });

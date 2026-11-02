@@ -4,6 +4,7 @@ import { getAuth as getAdminAuth, Auth } from 'firebase-admin/auth';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { DEFAULT_FIREBASE_CREDENTIALS_B64 } from './defaultCredentials';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,6 +59,15 @@ export const initFirebase = () => {
         privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
       });
       console.log('🔑 Firebase credentials loaded from individual env vars');
+    } else if (!fileLoaded && DEFAULT_FIREBASE_CREDENTIALS_B64) {
+      try {
+        const decoded = Buffer.from(DEFAULT_FIREBASE_CREDENTIALS_B64, 'base64').toString('utf8');
+        const parsed = JSON.parse(decoded);
+        credential = cert(parsed);
+        console.log('🔑 Firebase credentials loaded from embedded default fallback');
+      } catch (err: any) {
+        console.error('⚠️ Could not parse embedded fallback credentials:', err.message);
+      }
     }
 
     if (!credential) {
